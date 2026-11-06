@@ -13,7 +13,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--ink);color:var(--paper);font-family:"Chivo","Helvetica Neue",Arial,sans-serif;overflow-x:hidden}
 #track{height:650vh}
-#stage{position:sticky;top:0;height:100vh;overflow:hidden;background:linear-gradient(#2b1a5e 0%,#5e2a88 28%,#a8367f 46%,#ee6358 62%,#ffb35c 74%,#2a1a44 75%)}   /* sunset fallback, always visible */
+#stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:linear-gradient(#2b1a5e 0%,#5e2a88 28%,#a8367f 46%,#ee6358 62%,#ffb35c 74%,#2a1a44 75%)}   /* sunset fallback, always visible */
 #loading{position:absolute;left:50%;bottom:12vh;transform:translateX(-50%);z-index:9;font-family:var(--px);font-size:1.4rem;text-shadow:2px 2px 0 #1a0f2e;text-align:center;max-width:90vw}
 #cv{position:absolute;inset:0;width:100%;height:100%}
 header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 20px 12px;background:linear-gradient(rgba(26,15,46,.85),transparent)}
@@ -29,7 +29,7 @@ nav a:hover,nav a:focus-visible{color:var(--gold);outline:none;text-decoration:u
 .enter button{padding:12px 16px;border:0;background:var(--orange);color:#1a0f2e;font-family:var(--px);font-size:1.2rem;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #msg{min-height:1.4em;margin:8px 0 0;font-weight:700;color:var(--gold)}
-#hint{position:absolute;left:50%;top:60vh;transform:translateX(-50%);z-index:7;font-family:var(--px);font-size:1.4rem;text-shadow:2px 2px 0 #1a0f2e;white-space:nowrap}
+#hint{position:absolute;left:50%;top:60vh;transform:translate(-50%,-100%);z-index:7;font-family:var(--px);font-size:1.4rem;text-shadow:2px 2px 0 #1a0f2e;white-space:nowrap}
 .o{position:absolute;left:0;top:0;transform-origin:50% 100%;translate:-50% -100%;z-index:4}
 .sign{position:relative;width:460px;height:440px}
 .pole{position:absolute;left:50%;bottom:0;width:14px;height:50%;background:#2c2c3e;transform:translateX(-50%)}
@@ -69,6 +69,36 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .node circle{fill:#ffe9a8;stroke:#1d1a26;stroke-width:4;transition:fill .2s}
 .node:hover circle,.node:focus-visible circle,.node.on circle{fill:#e0407f}
 .node text{font-weight:600;font-size:15px;fill:#1d1a26}
+
+/* scroll hint: bouncing arrow points down, the direction you scroll */
+#hint{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
+#hint .dn{font-size:2.2rem;line-height:1;animation:nudge 1.1s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(10px)}}
+/* small About us signpost */
+.about{position:relative;width:260px;height:200px}
+.apole{position:absolute;left:50%;bottom:0;width:12px;height:46%;background:#2c2c3e;transform:translateX(-50%)}
+.atag{position:absolute;left:0;right:0;top:0;background:#fff3e2;color:#1a0f2e;border:4px solid #2c2c3e;border-radius:12px 20px 12px 22px;padding:8px 14px 10px;transform:rotate(-2deg)}
+.atag h3{font-family:var(--px);font-weight:400;font-size:1.8rem;color:#c2307a;margin:0;line-height:1.1}
+.atag p{margin:4px 0 0;font-size:.9rem;line-height:1.35}
+/* phone layout */
+#subway.compact .subwrap{width:540px}
+#subway.compact .dest{display:none}
+#subway.compact .sub h2{font-size:2rem}
+#subway.compact .node text{font-size:27px}
+#subway.compact .sub .cap{font-size:1.3rem}
+@media (max-width:520px){
+  header{padding-left:14px;padding-right:14px}
+  .logo{font-size:1.35rem}.logo i{width:16px;height:16px}
+  nav a{margin-left:10px;font-size:.8rem}
+  #hero{top:9vh}#hero p{font-size:.95rem;margin-top:8px}
+  .enter{margin-top:10px;padding:8px}
+}
+@media (prefers-reduced-motion:reduce){#hint .dn{animation:none}}
+#where{position:absolute;left:50%;top:96px;transform:translateX(-50%);z-index:7;text-align:center;opacity:0;pointer-events:none;width:min(80vw,360px)}
+#where small{display:block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#ffd9a0}
+#where b{display:block;font-family:var(--px);font-weight:400;font-size:2rem;line-height:1.1;text-shadow:2px 2px 0 #1a0f2e}
+#where i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.18);margin-top:8px;overflow:hidden}
+#where u{display:block;height:100%;width:0;background:#ff7a3d;border-radius:3px}
 </style>
 </head>
 <body>
@@ -119,6 +149,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <div class="cap" id="cap" aria-live="polite">Tap a stop to see what happens there.</div>
   </div><div class="legs"><i></i><i></i></div></div></div>
 
+  <!-- small "About us" signpost on the sidewalk (placed along the road by the script) -->
+  <div class="o" id="about"><div class="about"><div class="apole"></div><div class="atag"><h3>About us</h3><p>RevolutionUC is UC’s student-run hackathon. Build, learn and ship something in a weekend. All majors welcome.</p></div></div></div>
+
+  <!-- "Now passing" label + progress bar, only visible in the empty sky on tall phone screens -->
+  <div id="where" aria-hidden="true"><small>Now passing</small><b id="whereTxt">Downtown Cincinnati</b><i><u id="prog"></u></i></div>
+
   <div id="hero">
     <h1>Cincinnati after dark starts here.</h1>
     <p>RevolutionUC is a student hackathon at the University of Cincinnati. Build something in a weekend, meet other makers, and ship it before the lights come up.</p>
@@ -129,7 +165,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <div id="msg" role="status"></div>
   </div>
   <div id="loading">Painting the city…</div>
-  <div id="hint">Scroll to drive ▶</div>
+  <div id="hint"><span id="hintTxt">Scroll down to drive</span><span class="dn">▼</span></div>
  </div>
 </div>
 </main>
@@ -142,8 +178,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 var VH=180,GY=138,RD=148,WL=3800,RS=3;
 var cv=document.getElementById('cv'),g=cv.getContext('2d'),track=document.getElementById('track'),
     hero=document.getElementById('hero'),hint=document.getElementById('hint'),
-    sched=document.getElementById('sched'),spon=document.getElementById('spon'),subw=document.getElementById('subway');
-var W,H,VW,U,DPR,camMax,camS=0,SX,PX,BX,seed=5,FAR=[],MID=[],gaps=[],cars=[],BR={},t=0,pr=0,vel=0,S={},LM={},grain;
+    sched=document.getElementById('sched'),spon=document.getElementById('spon'),subw=document.getElementById('subway'),about=document.getElementById('about'),stage=document.getElementById('stage'),where=document.getElementById('where'),whereTxt=document.getElementById('whereTxt'),prog=document.getElementById('prog');
+var W,H,VW,U,OFF=0,DPR,camMax,camS=0,SX,PX,BX,AX,seed=5,FAR=[],MID=[],gaps=[],cars=[],BR={},t=0,pr=0,vel=0,S={},LM={},grain;
 
 /* ====================================================================
    IMAGE SWAP POINTS  (put your own artwork here)
@@ -177,7 +213,7 @@ var IMAGES={sky:null,sun:null,far:null,midfar:null,mid:null,bridge:null,walk:nul
    They switch off automatically when you replace the layer they sit on, so they don't float in the wrong place. */
 var FX={windows:true,glow:true,spray:true};
 /* Q = scroll progress (0 to 1) at which each landmark is centered on screen */
-var Q={carew:.08,fifth:.14,gat:.18,pnc:.22,scripps:.26,ws:.30,fs:.12,sch:.24,br:.34,ut:.66,uc:.80,sub:.86};
+var Q={carew:.08,fifth:.14,gat:.18,pnc:.22,scripps:.26,ws:.30,fs:.12,sch:.24,about:.29,br:.34,ut:.66,uc:.80,sub:.86};
 function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
 function hh(a,b){var n=Math.sin(a*12.9898+b*78.233)*43758.5453;return n-Math.floor(n)}
 function mod(a,n){return((a%n)+n)%n}
@@ -228,7 +264,7 @@ function build(){
     MID.push(m2);x+=w2+(rnd()*2|0)}
   cars=[];for(i=0;i<7;i++)cars.push({x0:rnd()*400,v:16+rnd()*22,k:i%6,y:i%2?157:161});
   // world x of the three big signs (sponsors hangs over the middle of the bridge)
-  SX=Q.sch*camMax+VW*(.12+.5*Q.sch)+30;PX=BR.x0+510;BX=Q.sub*camMax+VW*(.12+.5*Q.sub)+30}
+  SX=Q.sch*camMax+VW*(.12+.5*Q.sch)+30;PX=BR.x0+510;BX=Q.sub*camMax+VW*(.12+.5*Q.sub)+30;AX=Q.about*camMax+VW*(.12+.5*Q.about)+30}
 
 /* ========== PAINT: pre-render every layer once into offscreen canvases ========== */
 var SKY=['#2b1a5e','#40247a','#5e2a88','#82308a','#a8367f','#cf4373','#ee6358','#ff8a4c','#ffb35c','#ffd27a'];
@@ -450,20 +486,37 @@ function frame(now){
   g.globalAlpha=.07;g.fillStyle='#ff7a3d';g.fillRect(0,0,VW,VH);g.globalAlpha=1;
   g.save();g.setTransform(1,0,0,1,0,0);g.globalAlpha=.2;g.fillStyle=grain;g.fillRect(0,0,cv.width,cv.height);g.restore();
   // HTML signs and overlays
-  var base=(GY+6)*U,Sc=Math.min(1.1,H/800);
-  var sponSc=Math.min(W*.92/560,(118*U-64)/150,6);        // sponsors banner: scales up to fill the screen width
-  var subSc=Math.min(W*.92/860,base*.88/650);
-  place(sched,SX,px,Sc,.3,460);place(spon,PX,px,sponSc,.1,560,118);place(subw,BX,px,subSc,0,860);
+  var base=(GY+6)*U,subW=W<700?540:860;             // phones get a more compact map sign
+  var Sc=Math.min(1.1,W*.92/460,base*.9/440);                // schedule sign: never wider than the screen
+  var sponSc=Math.min(W*.92/560,(118*U-64)/150,6);           // sponsors banner: fills the screen width
+  var subSc=Math.min(W*.92/subW,base*.88/650);
+  var abSc=Math.min(1.15,W*.7/260,base*.62/200);             // small "About us" tag
+  place(sched,SX,px,Sc,.3,460);place(about,AX,px,abSc,.15,260);place(spon,PX,px,sponSc,.1,560,118);place(subw,BX,px,subSc,0,subW);
   hero.style.opacity=Math.max(0,1-tp*9);hero.style.pointerEvents=tp>.1?'none':'auto';
   hint.style.opacity=Math.max(0,1-tp*12);
+  var wh=WHERE[0];for(i=0;i<WHERE.length;i++)if(pr>=WHERE[i][0])wh=WHERE[i];          // current landmark label
+  if(whereTxt.textContent!==wh[1])whereTxt.textContent=wh[1];
+  where.style.opacity=OFF>60?Math.min(1,Math.max(0,(tp-.06)*14)):0;prog.style.width=(tp*100)+'%';
   requestAnimationFrame(frame)}
 function place(el,wx,px,Sc,zm,bw,yu){var s=wx-camS,half=bw*Sc*.65;if(s*U<-half||s*U>W+half){el.style.display='none';return}
   el.style.display='';var z=1+zm*Math.max(0,1-Math.abs(s-(px+13))/(VW*.3));
-  el.style.transform='translate('+(s*U)+'px,'+((yu||GY+6)*U)+'px) scale('+(Sc*z)+')'}
-function size(){W=innerWidth;H=innerHeight;if(W<50||H<50)return false;     // preview frame not laid out yet
-  DPR=Math.min(devicePixelRatio||1,1.5);VW=Math.min(700,Math.max(100,VH*W/H));U=H/VH;
-  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);g.setTransform(cv.width/VW,0,0,cv.height/VH,0,0);build();paint();applyImages();return true}
-var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(size,200)});
+  var tot=Math.min(Sc*z,Math.max(Sc,W*.96/bw));               // zoom in as the car passes, but never wider than the screen
+  el.style.transform='translate('+(s*U)+'px,'+(OFF+(yu||GY+6)*U)+'px) scale('+tot+')'}
+/* "Now passing" label shown in the empty sky on tall phone screens: [scroll progress, text] */
+var WHERE=[[0,'Downtown Cincinnati'],[.09,'Fountain Square'],[.2,'Schedule'],[.27,'About us'],[.33,'Roebling Suspension Bridge'],[.5,'Our sponsors'],[.62,'Union Terminal'],[.76,'University of Cincinnati'],[.84,'Explore Rev UC'],[.95,'1819 Innovation Hub']];
+var STARS='radial-gradient(2px 2px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 30% 12%,#ffd9a0,transparent),radial-gradient(2px 2px at 55% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 18%,#fff,transparent),radial-gradient(2px 2px at 90% 40%,#ffd9a0,transparent),radial-gradient(1.5px 1.5px at 20% 52%,#fff,transparent),radial-gradient(1.5px 1.5px at 66% 62%,#fff,transparent),radial-gradient(2px 2px at 42% 74%,#ffd9a0,transparent),radial-gradient(1.5px 1.5px at 8% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 92% 84%,#fff,transparent),#2b1a5e';
+var MINVW=170;   // the scene is never narrower than 170 units, so phones see more of the city
+function layout(){H=stage.clientHeight||innerHeight;var cssH=W*VH/VW;U=cssH/VH;OFF=Math.max(0,H-cssH);   // OFF = empty sky above the scene on tall screens
+  cv.style.top=OFF+'px';cv.style.bottom='auto';cv.style.height=cssH+'px';
+  hint.style.top=(OFF+RD*U)+'px'}   // scroll hint sits just above the road, near the car
+function size(){W=innerWidth;H=stage.clientHeight||innerHeight;if(W<50||H<50)return false;     // preview frame not laid out yet
+  DPR=Math.min(devicePixelRatio||1,1.5);VW=Math.min(700,Math.max(MINVW,VH*W/H));layout();
+  cv.width=Math.round(W*DPR);cv.height=Math.round(U*VH*DPR);g.setTransform(cv.width/VW,0,0,cv.height/VH,0,0);
+  subw.classList.toggle('compact',W<700);build();paint();applyImages();
+  stage.style.background=OFF>0?STARS:'';return true}
+var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){
+  if(innerWidth===W&&VW===MINVW&&(stage.clientHeight||innerHeight)>=50)layout();   // phone toolbar showing/hiding: cheap relayout, no repaint
+  else size()},200)});
 /* paint after the page has appeared (so a sunset gradient is already visible), then start the animation loop */
 var loading=document.getElementById('loading');
 function start(){try{if(!size()){setTimeout(start,100);return}loading.style.display='none';requestAnimationFrame(frame)}
@@ -486,6 +539,8 @@ function pick(n){nodes.forEach(function(x){x.classList.remove('on')});n.classLis
 nodes.forEach(function(n){n.addEventListener('click',function(){pick(n)});
   n.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(n)}})});
 if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('train').style.display='none';
+// the scroll hint says "swipe" on touch screens
+if(matchMedia('(pointer:coarse)').matches)document.getElementById('hintTxt').textContent='Swipe up to drive';
 })();
 </script>
 </body>

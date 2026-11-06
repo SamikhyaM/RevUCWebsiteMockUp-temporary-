@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RevUC – Cincinnati Painted Drive</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a0f2e;--orange:#ff7a3d;--gold:#ffc46b;--paper:#fff3e2;--magenta:#c2307a;--glass:rgba(26,15,46,.82);
+--px:"Caveat Brush","Comic Sans MS",cursive;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:"Chivo","Helvetica Neue",Arial,sans-serif;overflow-x:hidden}
+#track{height:650vh}
+#stage{position:sticky;top:0;height:100vh;overflow:hidden;background:linear-gradient(#2b1a5e 0%,#5e2a88 28%,#a8367f 46%,#ee6358 62%,#ffb35c 74%,#2a1a44 75%)}   /* sunset fallback, always visible */
+#loading{position:absolute;left:50%;bottom:12vh;transform:translateX(-50%);z-index:9;font-family:var(--px);font-size:1.4rem;text-shadow:2px 2px 0 #1a0f2e;text-align:center;max-width:90vw}
+#cv{position:absolute;inset:0;width:100%;height:100%}
+header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 20px 12px;background:linear-gradient(rgba(26,15,46,.85),transparent)}
+.logo{font-family:var(--px);font-size:1.7rem;color:var(--paper);text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo i{width:20px;height:20px;background:var(--orange);clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)}
+nav a{color:var(--paper);text-decoration:none;margin-left:16px;font-weight:700;font-size:.9rem}
+nav a:hover,nav a:focus-visible{color:var(--gold);outline:none;text-decoration:underline}
+#hero{position:absolute;left:50%;top:12vh;transform:translateX(-50%);width:min(640px,92vw);text-align:center;z-index:7}
+#hero h1{font-family:var(--px);font-weight:400;font-size:clamp(2rem,6vw,4rem);line-height:1.05;margin:0;text-shadow:3px 3px 0 #1a0f2e}
+#hero p{font-size:1rem;line-height:1.5;margin:12px auto 0;max-width:46ch;text-shadow:0 2px 8px rgba(26,15,46,.95)}
+.enter{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;background:var(--glass);padding:10px;border:3px solid var(--gold);border-radius:16px 24px 14px 26px}
+.enter input{flex:1 1 180px;padding:12px 14px;border:0;font:inherit;background:#fff3e2;color:#1a0f2e}
+.enter button{padding:12px 16px;border:0;background:var(--orange);color:#1a0f2e;font-family:var(--px);font-size:1.2rem;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#msg{min-height:1.4em;margin:8px 0 0;font-weight:700;color:var(--gold)}
+#hint{position:absolute;left:50%;top:60vh;transform:translateX(-50%);z-index:7;font-family:var(--px);font-size:1.4rem;text-shadow:2px 2px 0 #1a0f2e;white-space:nowrap}
+.o{position:absolute;left:0;top:0;transform-origin:50% 100%;translate:-50% -100%;z-index:4}
+.sign{position:relative;width:460px;height:440px}
+.pole{position:absolute;left:50%;bottom:0;width:14px;height:50%;background:#2c2c3e;transform:translateX(-50%)}
+.hex{position:absolute;left:50%;top:0;transform:translateX(-50%);width:260px;height:170px;background:var(--paper);clip-path:polygon(22% 0,78% 0,100% 50%,78% 100%,22% 100%,0 50%);display:grid;place-items:center}
+.hex::before{content:"";position:absolute;inset:7px;background:var(--ink);clip-path:inherit}
+.hex h2{position:relative;font-family:var(--px);font-weight:400;font-size:2rem;margin:0}
+.arrow{position:absolute;background:var(--paper);color:var(--ink);padding:8px 14px;font-weight:700;font-size:13px;line-height:1.25;white-space:nowrap}
+.arrow b{display:block;font-size:12px;color:var(--magenta)}
+.a1{left:0;top:42%;clip-path:polygon(0 50%,12% 0,100% 0,100% 100%,12% 100%);padding-left:26px}
+.a2{right:0;top:42%;clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);padding-right:28px}
+.a3{left:0;top:62%;clip-path:polygon(0 50%,12% 0,100% 0,100% 100%,12% 100%);padding-left:26px}
+.a4{right:0;top:62%;clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);padding-right:28px}
+.spons{position:relative;width:560px;height:150px}
+.spons::before,.spons::after{content:"";position:absolute;top:-70px;width:5px;height:70px;background:#2c2c3e}
+.spons::before{left:70px}.spons::after{right:70px}
+.spons .bar{position:absolute;left:0;right:0;top:0;height:150px;background:#2c2c3e;border:4px solid #6a6a86;padding:10px 14px}
+.spons h2{font-family:var(--px);font-weight:400;font-size:1.9rem;letter-spacing:.08em;text-align:center;margin:0 0 10px}
+.logos{display:flex;gap:10px}
+.logos div{flex:1;height:70px;background:var(--paper);color:var(--magenta);display:grid;place-items:center;font-weight:800}
+.spons .p1,.spons .p2{position:absolute;top:150px;bottom:0;width:16px;background:#2c2c3e}
+.p1{left:30px}.p2{right:30px}
+/* subway-style map sign near the end of the drive */
+.subwrap{position:relative;width:860px;padding-bottom:70px}
+.sub{position:relative;background:#14172a;border:6px solid #0b0c18;border-radius:14px;padding-bottom:10px}
+.subhead{display:flex;align-items:center;gap:14px;padding:12px 18px;background:#0b0c18}
+.bullet{width:48px;height:48px;border-radius:50%;background:#e0407f;color:#fff;display:grid;place-items:center;font-family:var(--px);font-size:1.9rem}
+.sub h2{font-family:var(--px);font-weight:400;font-size:2.6rem;margin:0;color:#fff;line-height:1}
+.dest{margin-left:auto;font-weight:700;font-size:.95rem;color:#ffe9a8}
+.sub .map{background:#fff;border:3px solid #1d1a26;border-radius:6px;margin:10px 14px 0}
+.sub .map svg{width:100%;height:auto;display:block}
+.sub .cap{margin:8px 18px 0;min-height:2.6em;color:#fff;font-size:1.05rem}
+.legs i{position:absolute;bottom:0;width:16px;height:72px;background:#2c2c3e}
+.legs i:first-child{left:90px}.legs i:last-child{right:90px}
+.road-line{fill:none;stroke:#1d1a26;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.road-in{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round}
+.node{cursor:pointer}
+.node circle{fill:#ffe9a8;stroke:#1d1a26;stroke-width:4;transition:fill .2s}
+.node:hover circle,.node:focus-visible circle,.node.on circle{fill:#e0407f}
+.node text{font-weight:600;font-size:15px;fill:#1d1a26}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#start"><i></i>RevUC</a>
+  <nav><a href="#schedule">Schedule</a><a href="#sponsors">Sponsors</a><a href="#explore">Explore</a><a href="#enter">Register</a><a href="layerLab.html">Layer Lab ✦</a></nav>
+</header>
+<main>
+<div id="track">
+ <div id="stage">
+  <canvas id="cv" aria-label="Hand-painted Cincinnati street at sunset with a car driving right"></canvas>
+
+  <div class="o" id="sched"><div class="sign"><div class="pole"></div><div class="hex"><h2>SCHEDULE</h2></div>
+    <div class="arrow a1"><b>Fri, 6–8 PM</b>Check-in &amp; dinner</div><div class="arrow a2"><b>Fri, 9 PM</b>Opening &amp; mixer</div>
+    <div class="arrow a3"><b>Sat, 10 AM–12 PM</b>Workshops</div><div class="arrow a4"><b>Sun, 11 AM</b>Demos &amp; awards</div></div></div>
+  <div class="o" id="spon"><div class="spons"><div class="bar"><h2>SPONSORS</h2><div class="logos"><div>Logo</div><div>Logo</div><div>Logo</div><div>Logo</div></div></div></div></div>
+
+
+  <!-- Subway-style map sign (the Explore Rev UC map); positioned along the road by the script -->
+  <div class="o" id="subway"><div class="subwrap"><div class="sub">
+    <div class="subhead"><span class="bullet">R</span><h2>Explore Rev UC</h2><span class="dest">Express to 1819 Innovation Hub ▶</span></div>
+    <div class="map"><svg viewBox="0 0 800 420" role="img" aria-label="Map of the venue">
+      <!-- Route: the id lets the train follow this exact path -->
+      <path id="route" class="road-line" d="M120 100 C220 110 260 150 340 130 S470 110 540 150 S680 250 640 300 S520 300 450 280 S330 290 260 340 S160 350 150 270 S200 220 270 215 S380 200 440 230"/>
+      <path class="road-in" d="M120 100 C220 110 260 150 340 130 S470 110 540 150 S680 250 640 300 S520 300 450 280 S330 290 260 340 S160 350 150 270 S200 220 270 215 S380 200 440 230"/>
+      <!-- Train: 3 cars following the route; later start times make them trail the lead car -->
+      <g id="train">
+      <g><animateMotion dur="18s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#route"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.96;1" dur="18s" begin="0s" repeatCount="indefinite"/>
+        <rect x="-13" y="-8" width="26" height="16" rx="3" fill="#6a2fd1" stroke="#1d1a26" stroke-width="3"/><rect x="-8" y="-4" width="5" height="5" fill="#fff"/><rect x="2" y="-4" width="5" height="5" fill="#fff"/></g>
+      <g><animateMotion dur="18s" begin="-0.45s" repeatCount="indefinite" rotate="auto"><mpath href="#route"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.96;1" dur="18s" begin="-0.45s" repeatCount="indefinite"/>
+        <rect x="-13" y="-8" width="26" height="16" rx="3" fill="#e0407f" stroke="#1d1a26" stroke-width="3"/><rect x="-8" y="-4" width="5" height="5" fill="#fff"/><rect x="2" y="-4" width="5" height="5" fill="#fff"/></g>
+      <g><animateMotion dur="18s" begin="-0.9s" repeatCount="indefinite" rotate="auto"><mpath href="#route"/></animateMotion>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.96;1" dur="18s" begin="-0.9s" repeatCount="indefinite"/>
+        <rect x="-14" y="-8" width="28" height="16" rx="6" fill="#f6c945" stroke="#1d1a26" stroke-width="3"/><rect x="-4" y="-4" width="5" height="5" fill="#fff"/><rect x="5" y="-4" width="6" height="5" fill="#8fe3f0"/></g>
+      </g>
+      <!-- Stops: data-t is the text shown when a stop is tapped -->
+      <g id="nodes">
+      <g class="node" tabindex="0" data-t="Check-in: pick up your badge and meet your team."><circle cx="120" cy="100" r="16"/><text x="100" y="72">Check-in</text></g>
+      <g class="node" tabindex="0" data-t="Hacking floor: where teams build for the whole event."><circle cx="340" cy="130" r="16"/><text x="318" y="108">Hack floor</text></g>
+      <g class="node" tabindex="0" data-t="Workshops: short sessions on tools, APIs, and design."><circle cx="540" cy="150" r="16"/><text x="520" y="128">Workshops</text></g>
+      <g class="node" tabindex="0" data-t="Food and rest: meals, snacks, and a quiet corner."><circle cx="640" cy="300" r="16"/><text x="588" y="340">Food + rest</text></g>
+      <g class="node" tabindex="0" data-t="Mentors: drop in for help on a stuck project."><circle cx="260" cy="340" r="16"/><text x="236" y="378">Mentors</text></g>
+      <g class="node" tabindex="0" data-t="Demo stage: show what you built and meet the judges."><circle cx="440" cy="230" r="16"/><text x="410" y="266">Demos</text></g>
+      </g>
+    </svg></div>
+    <div class="cap" id="cap" aria-live="polite">Tap a stop to see what happens there.</div>
+  </div><div class="legs"><i></i><i></i></div></div></div>
+
+  <div id="hero">
+    <h1>Cincinnati after dark starts here.</h1>
+    <p>RevolutionUC is a student hackathon at the University of Cincinnati. Build something in a weekend, meet other makers, and ship it before the lights come up.</p>
+    <form class="enter" onsubmit="return false">
+      <input id="city" type="email" placeholder="Your email" aria-label="Your email">
+      <button id="go" type="button">ENTER THE CITY</button>
+    </form>
+    <div id="msg" role="status"></div>
+  </div>
+  <div id="loading">Painting the city…</div>
+  <div id="hint">Scroll to drive ▶</div>
+ </div>
+</div>
+</main>
+
+<script>
+(function(){
+/* ========== SETTINGS ==========
+   Everything is drawn in "units" on a canvas that is 180 units tall (VH).
+   GY = ground line under the buildings, RD = top of the road, WL = total world length. */
+var VH=180,GY=138,RD=148,WL=3800,RS=3;
+var cv=document.getElementById('cv'),g=cv.getContext('2d'),track=document.getElementById('track'),
+    hero=document.getElementById('hero'),hint=document.getElementById('hint'),
+    sched=document.getElementById('sched'),spon=document.getElementById('spon'),subw=document.getElementById('subway');
+var W,H,VW,U,DPR,camMax,camS=0,SX,PX,BX,seed=5,FAR=[],MID=[],gaps=[],cars=[],BR={},t=0,pr=0,vel=0,S={},LM={},grain;
+
+/* ====================================================================
+   IMAGE SWAP POINTS  (put your own artwork here)
+   --------------------------------------------------------------------
+   Everything on screen is painted by code at startup. To use an image
+   instead, set the matching entry below to a URL. Leave null to keep the
+   painted version. Each image is auto-fitted: it is scaled to the layer's
+   height and repeated sideways, so a wide panorama that tiles works best.
+   (Tiles, sprites and the paper grain are stretched to their exact size.)
+
+   In a published artifact, remote URLs are blocked: use a data: URL
+   ('data:image/png;base64,....'). On your own site, use normal paths
+   such as 'img/far.png'.
+
+   LAYER ORDER (back to front)      parallax   export size (3 px per unit)
+     1  sky       sunset bands, clouds     2%   any width x 540 px
+     2  sun       sun disc + halo          3%   240 x 240 px
+     3  far       far skyline + towers    10%   any width x 540 px
+     4  midfar    Union Terminal          22%   any width x 540 px
+     5  mid       street buildings, Fountain Square, UC, 1819 Hub   55%   any width x 540 px
+     6  bridge    Roebling Bridge        100%   3060 x 540 px (world strip)
+     7  walk      sidewalk + lamps       100%   1080 x 150 px (tile, repeats every 360 units)
+     8  road      asphalt                100%   1080 x 96 px  (tile, repeats every 360 units)
+     9  cars      7 sprites, facing right       102 x 60 px each (index 6 = player's car)
+    10  glow      soft light sprite (lamps, windows)   102 x 102 px
+    11  grain     paper texture over everything   any square, repeats
+   ==================================================================== */
+var IMAGES={sky:null,sun:null,far:null,midfar:null,mid:null,bridge:null,walk:null,road:null,
+            cars:[null,null,null,null,null,null,null],glow:null,grain:null};
+/* Effects that are drawn by code at fixed spots (flashing windows, tower glows, fountain spray).
+   They switch off automatically when you replace the layer they sit on, so they don't float in the wrong place. */
+var FX={windows:true,glow:true,spray:true};
+/* Q = scroll progress (0 to 1) at which each landmark is centered on screen */
+var Q={carew:.08,fifth:.14,gat:.18,pnc:.22,scripps:.26,ws:.30,fs:.12,sch:.24,br:.34,ut:.66,uc:.80,sub:.86};
+function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+function hh(a,b){var n=Math.sin(a*12.9898+b*78.233)*43758.5453;return n-Math.floor(n)}
+function mod(a,n){return((a%n)+n)%n}
+function cl(v){return v<0?0:v>255?255:v|0}
+function jit(col,k){if(col.charAt(0)!=='#')return col;var n=parseInt(col.slice(1),16),d=(rnd()-.5)*k;return'rgb('+cl((n>>16)+d)+','+cl((n>>8&255)+d)+','+cl((n&255)+d)+')'}
+function dk(col,k){var n=parseInt(col.slice(1),16);return'rgb('+cl((n>>16)-k)+','+cl((n>>8&255)-k)+','+cl((n&255)-k)+')'}
+function mk(w,h){var c=document.createElement('canvas');c.width=Math.ceil(w*RS);c.height=Math.ceil(h*RS);var x=c.getContext('2d');x.scale(RS,RS);return{c:c,x:x}}
+
+/* ========== BRUSH HELPERS (the painted look) ========== */
+function poly(c,x,y,w,h,col,wb,a){var J=function(){return(rnd()-.5)*2*wb},i;c.globalAlpha=a==null?1:a;c.fillStyle=col;c.beginPath();c.moveTo(x+J(),y+J());
+  for(i=x;i<x+w;i+=3)c.lineTo(i,y+J());for(i=y;i<y+h;i+=3)c.lineTo(x+w+J(),i);for(i=x+w;i>x;i-=3)c.lineTo(i,y+h+J());for(i=y+h;i>y;i-=3)c.lineTo(x+J(),i);c.closePath();c.fill();c.globalAlpha=1}
+function strokes(c,x,y,w,h,col,n,len,a,th){c.globalAlpha=a;for(var i=0;i<n;i++){var l=len*(.5+rnd());c.fillStyle=jit(col,50);c.fillRect(x+rnd()*Math.max(1,w-l),y+rnd()*h,l,th*(.6+rnd()))}c.globalAlpha=1}
+function wall(c,x,y,w,h,col){poly(c,x,y,w,h,col,.7);strokes(c,x,y,w,h,col,w*h/10,9,.35,1.3);strokes(c,x,y,w,h,dk(col,45),w*h/38,5,.3,.7)}
+function leaf(c,x,y,r,col,a){c.save();c.translate(x,y);c.rotate(rnd()*3.14);c.globalAlpha=a;c.fillStyle=col;c.beginPath();c.ellipse(0,0,r,r*.55,0,0,6.283);c.fill();c.restore();c.globalAlpha=1}
+function foliage(c,x,y,w,h,cols,fl){var n=w*h/4|0,i,a,r;
+  for(i=0;i<n;i++){a=rnd()*6.283;r=Math.sqrt(rnd());leaf(c,x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,1.1+rnd()*1.6,jit(cols[rnd()*cols.length|0],44),.93)}
+  for(i=0;i<n/6;i++){a=rnd()*6.283;r=Math.sqrt(rnd());leaf(c,x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,.6+rnd()*.5,'#1c2a24',.55)}
+  if(fl)for(i=0;i<n/5;i++){a=rnd()*6.283;r=Math.sqrt(rnd());c.fillStyle=fl[rnd()*fl.length|0];c.beginPath();c.arc(x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,.7+rnd()*.5,0,6.283);c.fill()}}
+function circ(c,cx,cy,r,col,a){c.globalAlpha=a;c.fillStyle=col;c.beginPath();for(var i=0;i<18;i++){var an=i/18*6.283,rr=r*(1+(rnd()-.5)*.07);c.lineTo(cx+Math.cos(an)*rr,cy+Math.sin(an)*rr)}c.closePath();c.fill();c.globalAlpha=1}
+
+/* ========== BUILD: lay out the world (positions only, no drawing) ========== */
+function build(){
+  seed=5;camMax=WL-VW;var x=-10,L=camMax*.1+VW+60,i;FAR=[];
+  // generic far skyline filler
+  while(x<L){var w=9+(rnd()*12|0),h=22+(rnd()*48|0),b={x:x,w:w,h:h,win:[]};
+    for(var wy=GY-h+4;wy<GY-30;wy+=5)for(var wx=2;wx<w-2;wx+=4)if(rnd()<.16)b.win.push(wx,wy,rnd()*9|0);
+    FAR.push(b);x+=w+(rnd()*3|0)}
+  // named downtown towers sit on the far layer (moves at 10% of the car's speed)
+  ['carew','fifth','gat','pnc','scripps','ws'].forEach(function(n){LM[n]=Q[n]*camMax*.1+VW*.5});
+  LM.ut=Q.ut*camMax*.22+VW*.5;                      // Union Terminal: mid-far layer (22%)
+  // Roebling Bridge: a full-speed foreground strip; tower 1 reaches the car at scroll Q.br
+  var t1=Q.br*camMax+VW*(.12+.5*Q.br)+22;
+  BR={x0:t1-130,w:1020,t1:130,t2:890};
+  // mid layer (55% speed): gaps where no regular buildings are drawn
+  var cfs=Q.fs*camMax*.55+VW*.5,cut=Q.ut*camMax*.55+VW*.5;LM.fs=cfs;
+  gaps=[[cfs-80,cfs+80],[.55*(BR.x0-VW)-10,.55*(BR.x0+BR.w)+VW+10],[cut-VW*.58,cut+VW*.58]];   // fountain, bridge, terminal
+  var specs=[{c:Q.uc*camMax*.55+VW*.5,w:170,sp:'uc'},{c:camMax*.55+VW*.74,w:176,sp:'hub'}],si=0;
+  var pal=[['#b5503a','#7e2f22'],['#e08a3a','#a85a1f'],['#7a3a78','#4d2049'],['#3a7a58','#214d35'],['#3a4a80','#212a4f'],['#c8643a','#823a20'],['#d9b45a','#a8822f']];
+  MID=[];x=-20;L=camMax*.55+VW+80;
+  while(x<L){gaps.forEach(function(gp){if(x>gp[0]-30&&x<gp[1])x=gp[1]});
+    if(si<2&&x>=specs[si].c-specs[si].w/2-20){          // UC campus + 1819 Innovation Hub
+      var s=specs[si++],hub=s.sp==='hub',m={x:Math.max(x,s.c-s.w/2),w:s.w,h:hub?108:112,sp:s.sp,c:hub?'#7a96b4':'#9a3a2e',d:hub?'#4a6684':'#5a1f1a',aw:'#fff',bar:false,lit:hub,vine:false,tank:false,ww:hub?26:6,wh:hub?14:8,lr:hub?[s.w/2-17,26,34,26]:null,win:[]};
+      if(hub){for(var ry=18;ry<=62;ry+=22)for(var rx=12;rx<150;rx+=40){var q=rnd();m.win.push(rx,ry,q<.5?1:(q<.7?2:0),rnd()*9|0)}}
+      else{[6,22,38,112,152].forEach(function(dx){[66,78].forEach(function(dy){var q=rnd();m.win.push(dx,dy,q<.5?1:(q<.7?2:0),rnd()*9|0)})})}
+      MID.push(m);x=m.x+m.w+4;continue}
+    var w2=38+(rnd()*28|0),h2=46+(rnd()*44|0),c=pal[rnd()*7|0],m2={x:x,w:w2,h:h2,c:c[0],d:c[1],aw:rnd()>.5?'#f0e2c4':'#ff7a8a',bar:rnd()<.12,lit:rnd()<.6,vine:rnd()<.55,tank:rnd()<.25,ww:6,wh:8,lr:[3,17,w2-6,17],win:[]};
+    for(var wy2=6;wy2<h2-30;wy2+=14)for(var wx2=5;wx2<w2-8;wx2+=11){var r=rnd();m2.win.push(wx2,wy2,r<.45?1:(r<.62?2:0),rnd()*9|0)}
+    MID.push(m2);x+=w2+(rnd()*2|0)}
+  cars=[];for(i=0;i<7;i++)cars.push({x0:rnd()*400,v:16+rnd()*22,k:i%6,y:i%2?157:161});
+  // world x of the three big signs (sponsors hangs over the middle of the bridge)
+  SX=Q.sch*camMax+VW*(.12+.5*Q.sch)+30;PX=BR.x0+510;BX=Q.sub*camMax+VW*(.12+.5*Q.sub)+30}
+
+/* ========== PAINT: pre-render every layer once into offscreen canvases ========== */
+var SKY=['#2b1a5e','#40247a','#5e2a88','#82308a','#a8367f','#cf4373','#ee6358','#ff8a4c','#ffb35c','#ffd27a'];
+function tier(c,cx,y,w,h,col,plain){poly(c,cx-w/2,y-h,w,h,col,.5);strokes(c,cx-w/2,y-h,w,h,col,w*h/9,8,.3,1);strokes(c,cx-w/2,y-h,w,h,'#9a62b8',w*h/50,6,.25,.8);if(!plain)strokes(c,cx-w/2+1,y-h+2,w-2,h-3,'#ffd9a0',w*h/45,1.2,.55,1.2)}
+function cap(c,cx,y,w,h,col){c.fillStyle=col;c.beginPath();c.moveTo(cx-w/2,y);c.lineTo(cx,y-h);c.lineTo(cx+w/2,y);c.fill()}
+function fountain(c,cx){   // Fountain Square: Tyler Davidson fountain ("Genius of Water")
+  poly(c,cx-72,GY-4,144,4,'#b09ab0',.5);strokes(c,cx-72,GY-4,144,4,'#d8c0cc',40,6,.4,.8);
+  c.fillStyle='#7a8a9a';c.beginPath();c.ellipse(cx,GY-5,34,6,0,0,6.283);c.fill();
+  c.fillStyle='#5fb0d0';c.beginPath();c.ellipse(cx,GY-7,30,4,0,0,6.283);c.fill();strokes(c,cx-26,GY-10,52,5,'#bfe8ff',14,5,.5,.8);
+  poly(c,cx-10,GY-14,20,8,'#6a7a6a',.3);poly(c,cx-6,GY-42,12,30,'#5f8a70',.4);poly(c,cx-8,GY-44,16,3,'#4f7a60',.3);
+  poly(c,cx-3,GY-57,6,14,'#6a9a80',.3);circ(c,cx,GY-60,3,'#6a9a80',1);poly(c,cx-17,GY-54,34,2.4,'#6a9a80',.3);
+  foliage(c,cx-70,GY-36,22,32,['#4f8a3a','#7aa83a','#2f6a3a'],null);foliage(c,cx+48,GY-36,22,32,['#4f8a3a','#7aa83a','#2f6a3a'],null)}
+function ucBody(c,b){var cx=b.x+b.w/2,i;   // UC campus: brick wings + clock tower
+  wall(c,b.x,GY-52,62,52,'#a8452f');wall(c,b.x+b.w-62,GY-52,62,52,'#a8452f');wall(c,cx-14,GY-112,28,112,'#9a3a2e');
+  poly(c,b.x-1,GY-54,64,3,b.d,.3);poly(c,b.x+b.w-63,GY-54,64,3,b.d,.3);
+  for(i=0;i<4;i++)poly(c,b.x+8+i*13,GY-22,3,22,'#f0e6d4',.3);poly(c,b.x+4,GY-26,52,3,'#f0e6d4',.3);
+  poly(c,cx-8,GY-80,16,12,'#2a1a3a',.3);circ(c,cx,GY-96,6.5,'#f6f1e7',1);
+  c.strokeStyle='#2a1a3a';c.lineWidth=.7;c.beginPath();c.moveTo(cx,GY-96);c.lineTo(cx,GY-100);c.moveTo(cx,GY-96);c.lineTo(cx+3,GY-95);c.stroke();
+  c.fillStyle='#3a2a4a';c.beginPath();c.moveTo(cx-16,GY-112);c.lineTo(cx,GY-136);c.lineTo(cx+16,GY-112);c.fill();
+  poly(c,b.x+b.w-46,GY-46,22,18,'#c4202e',.3);c.fillStyle='#fff';c.font='bold 11px Georgia,serif';c.fillText('UC',b.x+b.w-41,GY-33);
+  poly(c,b.x-26,GY-5,b.w+52,5,'#5b8a52',.6);
+  foliage(c,b.x-26,GY-38,26,36,['#4f8a3a','#7aa83a','#2f6a3a'],null);foliage(c,b.x+b.w,GY-38,26,36,['#4f8a3a','#7aa83a','#2f6a3a'],['#ffd27a'])}
+function hubBody(c,b){   // 1819 Innovation Hub: glass-and-steel box with a red top band
+  wall(c,b.x,GY-108,b.w,108,b.c);poly(c,b.x-2,GY-122,b.w+4,20,'#c4202e',.4);
+  c.fillStyle='#fff';c.font='bold 16px Arial,sans-serif';c.fillText('1819',b.x+8,GY-105);c.font='bold 9px Arial,sans-serif';c.fillText('INNOVATION HUB',b.x+48,GY-106);
+  poly(c,b.x+b.w/2-18,GY-28,36,28,'#2a3a54',.4);poly(c,b.x+b.w/2-.5,GY-28,1,28,'#8aa0b8',.1);
+  poly(c,b.x-2,GY-3,b.w+4,3,'#9a8a9a',.4);
+  foliage(c,b.x-16,GY-24,20,22,['#4f8a3a','#7aa83a'],['#ff7a8a','#ffd27a']);foliage(c,b.x+b.w-4,GY-24,20,22,['#4f8a3a','#7aa83a'],['#ff7a8a','#ffd27a'])}
+
+function paint(){
+  seed=77;var i,j,k,c,s;
+  // sky: banded gradient with horizontal brush streaks and clouds
+  
+  // ◄ IMAGE SWAP: IMAGES.sky replaces this layer
+  s=mk(VW+100,VH);c=s.x;S.sky=s.c;
+  for(i=0;i<10;i++)poly(c,-4,i*14-2,VW+108,17,SKY[i],1.4);
+  for(i=0;i<9;i++){strokes(c,0,(i+1)*14-3,VW+100,6,SKY[i+1],(VW+100)/3,28,.55,2.2);strokes(c,0,(i+1)*14-4,VW+100,6,SKY[i],(VW+100)/5,24,.4,2)}
+  for(i=0;i<14;i++)poly(c,rnd()*(VW+60),18+rnd()*80,30+rnd()*70,3+rnd()*4,rnd()>.5?'#ff9a8a':'#6a3a8a',2,.3);
+  // sun and soft glow sprites
+  
+  // ◄ IMAGE SWAP: IMAGES.sun replaces this layer
+  s=mk(80,80);c=s.x;S.sun=s.c;circ(c,40,40,37,'#ffd27a',.12);circ(c,40,40,28,'#ffd27a',.18);circ(c,40,40,18,'#fff0b8',1);strokes(c,24,28,32,24,'#ffe9a0',10,10,.4,1.2);
+  
+  // ◄ IMAGE SWAP: IMAGES.glow replaces this layer
+  s=mk(34,34);c=s.x;S.glow=s.c;var gr=c.createRadialGradient(17,17,0,17,17,17);gr.addColorStop(0,'rgba(255,214,130,.95)');gr.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=gr;c.fillRect(0,0,34,34);
+  // far layer: filler skyline + the named downtown towers
+  
+  // ◄ IMAGE SWAP: IMAGES.far replaces this layer
+  s=mk(camMax*.1+VW+60,VH);c=s.x;S.far=s.c;var TC='#6e3a8c';
+  FAR.forEach(function(b){poly(c,b.x,GY-b.h,b.w,b.h,jit('#8f5aa0',24),.9);strokes(c,b.x,GY-b.h,b.w,b.h,'#b57ac0',b.w*b.h/30,6,.22,1)});
+  tier(c,LM.carew,GY,24,52,TC);tier(c,LM.carew,GY-52,18,20,TC);tier(c,LM.carew,GY-72,12,16,TC);tier(c,LM.carew,GY-88,7,14,TC);tier(c,LM.carew,GY-102,2.4,11,TC);   // Carew Tower (stepped)
+  tier(c,LM.fifth,GY,28,58,'#7a449a');c.fillStyle='#7a449a';c.beginPath();c.moveTo(LM.fifth-14,GY-58);c.lineTo(LM.fifth+14,GY-58);c.lineTo(LM.fifth+14,GY-73);c.fill();   // Fifth Third Center (slanted top)
+  tier(c,LM.gat,GY,20,84,TC);   // Great American Tower + tiara crown
+  [[-9,10],[0,17],[9,10]].forEach(function(sp){c.fillStyle=TC;c.beginPath();c.moveTo(LM.gat+sp[0]-2.4,GY-84);c.lineTo(LM.gat+sp[0],GY-84-sp[1]);c.lineTo(LM.gat+sp[0]+2.4,GY-84);c.fill()});
+  tier(c,LM.pnc,GY,18,74,'#7a449a');cap(c,LM.pnc,GY-74,18,14,'#7a449a');   // PNC Tower (pyramid cap)
+  tier(c,LM.scripps,GY,22,64,TC);tier(c,LM.scripps,GY-64,16,12,TC);cap(c,LM.scripps,GY-76,16,10,TC);   // Scripps Center
+  tier(c,LM.ws,GY,26,82,'#7a449a');tier(c,LM.ws,GY-82,16,10,'#7a449a');tier(c,LM.ws,GY-92,8,8,'#7a449a');tier(c,LM.ws,GY-100,2,8,'#7a449a');   // Western & Southern
+  var hz=c.createLinearGradient(0,GY-110,0,GY);hz.addColorStop(0,'rgba(255,150,120,0)');hz.addColorStop(1,'rgba(255,150,120,.4)');c.fillStyle=hz;c.fillRect(0,0,camMax*.1+VW+60,VH);
+  // Union Terminal (half dome) on the mid-far layer
+  
+  // ◄ IMAGE SWAP: IMAGES.midfar replaces this layer
+  s=mk(camMax*.22+VW+60,VH);c=s.x;S.b=s.c;
+  var ux=LM.ut;poly(c,ux-47,GY-16,94,16,'#7a4488',.5);poly(c,ux-31,GY-24,62,9,'#7a4488',.4);
+  for(i=30;i>=20;i-=2){c.fillStyle=i%4?'#8a5498':'#7a4488';c.beginPath();c.arc(ux,GY-24,i,Math.PI,0);c.closePath();c.fill()}
+  c.fillStyle='#2a1548';c.beginPath();c.arc(ux,GY-24,19,Math.PI,0);c.closePath();c.fill();strokes(c,ux-30,GY-50,60,26,'#a870b8',30,8,.25,.9);
+  c.fillStyle=hz;c.fillRect(0,0,camMax*.22+VW+60,VH);
+  // mid layer: street buildings, Fountain Square, campus lawn, UC, 1819 Hub
+  
+  // ◄ IMAGE SWAP: IMAGES.mid replaces this layer
+  s=mk(camMax*.55+VW+80,VH);c=s.x;S.mid=s.c;
+  fountain(c,LM.fs);
+  poly(c,gaps[2][0],GY-6,gaps[2][1]-gaps[2][0],6,'#5b8a52',.7);for(i=0;i<8;i++)foliage(c,gaps[2][0]+rnd()*(gaps[2][1]-gaps[2][0]-16),GY-12,16,12,['#4f8a3a','#7aa83a','#2f6a3a'],['#ff7a8a','#ffd27a']);
+  MID.forEach(function(b){var top=GY-b.h;
+    if(b.sp==='uc')ucBody(c,b);else if(b.sp==='hub')hubBody(c,b);
+    else{wall(c,b.x,top,b.w,b.h,b.c);poly(c,b.x-1,top-1,b.w+2,3,b.d,.4);
+      if(b.tank){poly(c,b.x+b.w*.3,top-9,9,9,b.d,.5);poly(c,b.x+b.w*.3-1,top-11,11,3,'#5a3a2a',.4)}}
+    for(k=0;k<b.win.length;k+=4){var wx=b.x+b.win[k],wy=top+b.win[k+1];   // painted window + highlight
+      poly(c,wx-1.2,wy-1.2,b.ww+2.4,b.wh+2.4,'#2a1a3a',.35);poly(c,wx,wy,b.ww,b.wh,'#34527e',.25);
+      c.globalAlpha=.5;c.strokeStyle='#cfe8ff';c.lineWidth=.7;c.beginPath();c.moveTo(wx+1,wy+b.wh-1);c.lineTo(wx+b.ww*.65,wy+1);c.stroke();c.globalAlpha=1;poly(c,wx-1.5,wy+b.wh+1,b.ww+3,1.5,'#f0e2c4',.3)}
+    if(!b.sp){   // vines + shopfront (awning, glass, door, planter)
+      if(b.vine)foliage(c,b.x+rnd()*(b.w-14),top+6+rnd()*10,12+rnd()*8,b.h*.45,['#4f8a3a','#7aa83a','#2f6a3a'],null);
+      poly(c,b.x,GY-23,b.w,23,dk(b.c,30),.5);
+      for(j=0;j<b.w;j+=4)poly(c,b.x+j,GY-23,4,5,(j/4|0)%2?b.aw:'#3a2250',.35);
+      poly(c,b.x+3,GY-17,b.w-6,17,'#243a52',.4);strokes(c,b.x+3,GY-17,b.w-6,17,'#5a8ab0',6,6,.3,1);
+      poly(c,b.x+b.w/2-3,GY-14,6,14,'#6a3a2a',.3);
+      foliage(c,b.x+b.w-12,GY-10,10,10,['#3f8a3a','#7aa83a'],['#ff5a5a','#ffd27a'])}
+    if(!b.sp){c.strokeStyle='rgba(26,15,46,.55)';c.lineWidth=.7;c.strokeRect(b.x,top,b.w,b.h)}});
+  // Roebling Bridge: stone towers, blue suspension cables, railing and river (full-speed strip)
+  
+  // ◄ IMAGE SWAP: IMAGES.bridge replaces this layer
+  s=mk(BR.w,VH);c=s.x;S.br=s.c;var cy,u,xx;
+  poly(c,0,112,BR.w,36,'#46347a',.8);strokes(c,0,112,BR.w,36,'#7a5ab0',BR.w*.9,8,.3,1);strokes(c,0,112,BR.w,36,'#ff9a6a',BR.w*.2,6,.3,.9);strokes(c,0,112,BR.w,8,'#ffd27a',BR.w*.1,10,.25,.8);
+  [BR.t1,BR.t2].forEach(function(tx){tier(c,tx,148,32,124,'#9a7890',true);
+    c.fillStyle='#2a1a3a';c.beginPath();c.moveTo(tx-8,148);c.lineTo(tx-8,112);c.quadraticCurveTo(tx-8,100,tx,92);c.quadraticCurveTo(tx+8,100,tx+8,112);c.lineTo(tx+8,148);c.fill();
+    [66,46].forEach(function(ay){c.beginPath();c.moveTo(tx-3,ay+10);c.lineTo(tx-3,ay+3);c.quadraticCurveTo(tx-3,ay-2,tx,ay-4);c.quadraticCurveTo(tx+3,ay-2,tx+3,ay+3);c.lineTo(tx+3,ay+10);c.fill()});
+    poly(c,tx-18,22,36,4,'#7a5870',.3)});
+  poly(c,0,138,BR.w,3,'#3f6fd0',.3);poly(c,0,141,BR.w,8,'#6a4a78',.5);poly(c,0,133,BR.w,1.8,'#3f6fd0',.3);
+  for(xx=0;xx<BR.w;xx+=8)poly(c,xx,134,1.6,8,'#3b2a5c',.2);
+  c.strokeStyle='#3f6fd0';c.lineWidth=1.8;c.beginPath();c.moveTo(0,138);c.lineTo(BR.t1,30);c.moveTo(BR.t2,30);c.lineTo(BR.w,138);c.stroke();
+  c.beginPath();c.moveTo(BR.t1,30);c.quadraticCurveTo((BR.t1+BR.t2)/2,186,BR.t2,30);c.stroke();   // main cable, sags to y=108
+  c.strokeStyle='rgba(63,111,208,.85)';c.lineWidth=.5;
+  for(xx=BR.t1+8;xx<BR.t2;xx+=7){u=(xx-BR.t1)/(BR.t2-BR.t1);cy=30*(1-u)*(1-u)+372*u*(1-u)+30*u*u;c.beginPath();c.moveTo(xx,cy);c.lineTo(xx,138);c.stroke()}
+  for(xx=10;xx<BR.t1-6;xx+=12){cy=138-108*xx/BR.t1;c.beginPath();c.moveTo(xx,cy);c.lineTo(xx,138);c.stroke();c.beginPath();c.moveTo(BR.w-xx,cy);c.lineTo(BR.w-xx,138);c.stroke()}
+  // sidewalk tile (lamps + planters) and road tile, both repeat every 360 units
+  
+  // ◄ IMAGE SWAP: IMAGES.walk replaces this layer
+  s=mk(360,RD-(GY-40));c=s.x;S.walk=s.c;
+  poly(c,-2,40,364,10,'#b88aa8',.5);
+  for(i=-14;i<364;i+=14){poly(c,i,41,13,5.2,jit('#c8a2bc',34),.9,.8);poly(c,i+7,46.5,13,3.4,jit('#a87a9c',34),.9,.8)}
+  poly(c,-2,48,364,2.2,'#6a4a78',.4);
+  [18,92,150,236,296,346].forEach(function(px){var w=22+rnd()*8,h=12+rnd()*6;foliage(c,px-w/2,40-h*.8,w,h,['#3f8a3a','#7aa83a','#2f6a3a','#a8c040'],['#ffd27a','#ff5a5a','#ff9a3a','#fff0b8'])});
+  [60,180,300].forEach(function(lx){poly(c,lx-1,8,2.4,32,'#2a1a3a',.2);poly(c,lx-1,7,9,2.2,'#2a1a3a',.2);poly(c,lx+5,8,5,2.6,'#2a1a3a',.2)});
+  
+  // ◄ IMAGE SWAP: IMAGES.road replaces this layer
+  s=mk(360,VH-RD);c=s.x;S.road=s.c;
+  poly(c,-2,0,364,32,'#33264a',.6);strokes(c,0,0,360,32,'#4a3866',200,12,.28,1.4);strokes(c,0,0,360,32,'#1a1030',160,10,.3,1.2);
+  poly(c,-2,13.6,364,.9,'#e8b84a',.25);poly(c,-2,15.6,364,.9,'#e8b84a',.25);poly(c,-2,0,364,1.8,'#1a1030',.3,.6);
+  // car sprites (6 traffic colors + the red player car)   ◄ IMAGE SWAP: IMAGES.cars[0..6] (6 = player)
+  S.car=['#2f7fd0','#e8b84a','#3aa56a','#d04fa0','#e8e0d0','#ff7a3d','#c4202e'].map(function(col){
+    var cs=mk(34,20),q=cs.x;poly(q,2,8.5,31,6.5,col,.5);poly(q,9,2.5,16,7,col,.5);
+    poly(q,10.5,3.8,6,4.6,'#bfe3ff',.3,.85);poly(q,17.5,3.8,6,4.6,'#bfe3ff',.3,.85);
+    strokes(q,2,8.5,31,6.5,col,16,6,.4,1);poly(q,2,12.7,31,1.6,'#000',.3,.25);
+    poly(q,31,9.5,3,2.2,'#fff0b8',.3);poly(q,1,9.5,1.6,2.2,'#ff4a4a',.2);
+    q.strokeStyle='rgba(26,15,46,.65)';q.lineWidth=.6;q.strokeRect(2,8.5,31,6.5);q.strokeRect(9,2.5,16,7);return cs.c});
+  // paper grain overlay
+  var gc=document.createElement('canvas');gc.width=gc.height=180;var gx=gc.getContext('2d');
+  for(i=0;i<2600;i++){gx.globalAlpha=.25+rnd()*.35;gx.fillStyle=rnd()>.5?'#fff3e2':'#2a1a3a';var z=1+rnd()*1.6;gx.fillRect(rnd()*180,rnd()*180,z,z)}
+  grain=g.createPattern(gc,'repeat')}   // ◄ IMAGE SWAP: IMAGES.grain replaces the paper texture (see applyImages)
+
+
+/* ========== IMAGE LOADING: swaps painted layers for your images (see IMAGES at the top) ========== */
+var IMG={};   // cache of loaded images, so a window resize doesn't reload them
+function loadImg(src){return new Promise(function(ok,no){var im=new Image();im.onload=function(){ok(im)};im.onerror=no;im.src=src})}
+/* Draw an image onto a fresh layer canvas of w x h units. 'tile' repeats it sideways at full height; 'stretch' fills exactly. */
+function fitImg(im,w,h,stretch){var s=mk(w,h);
+  if(stretch)s.x.drawImage(im,0,0,w,h);
+  else{var iw=Math.max(1,im.width*h/im.height);for(var x=0;x<w;x+=iw)s.x.drawImage(im,x,0,iw,h)}
+  return s.c}
+function applyImages(){
+  var slots={   // key: [where it goes, width in units, height in units, stretch?]
+    sky:['sky',VW+100,VH],sun:['sun',80,80,1],far:['far',camMax*.1+VW+60,VH],midfar:['b',camMax*.22+VW+60,VH],
+    mid:['mid',camMax*.55+VW+80,VH],bridge:['br',BR.w,VH],walk:['walk',360,RD-(GY-40),1],road:['road',360,VH-RD,1],glow:['glow',34,34,1]};
+  Object.keys(slots).forEach(function(k){var src=IMAGES[k];if(!src)return;var d=slots[k];
+    (IMG[k]?Promise.resolve(IMG[k]):loadImg(src).then(function(im){return IMG[k]=im})).then(function(im){
+      S[d[0]]=fitImg(im,d[1],d[2],d[3]);
+      if(k==='mid')FX.windows=FX.spray=false;      // painted windows/fountain no longer exist
+      if(k==='far'||k==='midfar')FX.glow=false}).catch(function(){})});
+  IMAGES.cars.forEach(function(src,i){if(!src)return;(IMG['car'+i]?Promise.resolve(IMG['car'+i]):loadImg(src).then(function(im){return IMG['car'+i]=im})).then(function(im){S.car[i]=fitImg(im,34,20,1)}).catch(function(){})});
+  if(IMAGES.grain)loadImg(IMAGES.grain).then(function(im){grain=g.createPattern(im,'repeat')}).catch(function(){});
+}
+
+/* ========== DRAW: per-frame work (cars, lights, parallax) ========== */
+function drawCar(x,y,d,spr,sc,spin,beam){
+  g.save();g.translate(x,y);g.scale(d*sc,sc);
+  g.globalAlpha=.35;g.fillStyle='#0c0618';g.beginPath();g.ellipse(0,.5,18,2.2,0,0,6.283);g.fill();g.globalAlpha=1;
+  g.drawImage(spr,-17,-18,34,20);
+  [-9,8].forEach(function(wx){g.fillStyle='#1c1228';g.beginPath();g.arc(wx,-3,3,0,6.283);g.fill();g.fillStyle='#d8c8e8';g.beginPath();g.arc(wx,-3,1.4,0,6.283);g.fill();
+    g.strokeStyle='#1c1228';g.lineWidth=.5;g.beginPath();g.moveTo(wx+Math.cos(spin)*1.4,-3+Math.sin(spin)*1.4);g.lineTo(wx-Math.cos(spin)*1.4,-3-Math.sin(spin)*1.4);g.stroke()});
+  if(beam){g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,220,140,.14)';g.beginPath();g.moveTo(17,-9);g.lineTo(48,-15);g.lineTo(48,-2);g.closePath();g.fill();g.globalCompositeOperation='source-over'}
+  g.restore()}
+function layer(img,f){g.drawImage(img,camS*f*RS,0,VW*RS,VH*RS,0,0,VW,VH)}   // draw the visible slice of a parallax strip
+
+function frame(now){
+  t=now/1000;
+  var tp=Math.min(1,Math.max(0,scrollY/(track.offsetHeight-H)));
+  var old=camS;camS+=(tp*camMax-camS)*.14;vel=camS-old;pr=camS/camMax;       // smoothed scroll position
+  var i,k,b,sx;
+  // sky, sun, far skyline (+ twinkling windows, tower glows, beacons)
+  g.clearRect(0,0,VW,VH);
+  g.drawImage(S.sky,-camS*.02,0,VW+100,VH);       // LAYER 1  sky   ◄ IMAGES.sky
+  g.drawImage(S.sun,VW*.62-camS*.03-40,48,80,80);   // LAYER 2  sun   ◄ IMAGES.sun
+  layer(S.far,.1);                                  // LAYER 3  far skyline (10% speed)   ◄ IMAGES.far
+  g.globalAlpha=.6;g.fillStyle='#ffd9a0';
+  for(i=0;FX.glow&&i<FAR.length;i++){b=FAR[i];sx=b.x-camS*.1;if(sx>VW||sx+b.w<0)continue;
+    for(k=0;k<b.win.length;k+=3)if(((t*1.2+b.win[k+2])|0)%7!==0)g.fillRect(sx+b.win[k],b.win[k+1],1,1.7)}
+  g.globalAlpha=1;
+  var gx=LM.gat-camS*.1,cx=LM.carew-camS*.1,ux=LM.ut-camS*.22;
+  if(FX.glow){g.globalCompositeOperation='lighter';
+  g.globalAlpha=.3+.15*Math.sin(t*2);g.drawImage(S.glow,gx-17,GY-84-28,34,34);
+  g.globalAlpha=.25+.1*Math.sin(t*2+1);g.drawImage(S.glow,ux-17,GY-60,34,34);g.globalAlpha=1;g.globalCompositeOperation='source-over';
+  g.fillStyle='#ff3b3b';if(((t*1.3)|0)%2){g.beginPath();g.arc(gx,GY-104,1,0,6.283);g.fill()}if(((t*1.2)|0)%2){g.beginPath();g.arc(cx,GY-114,1,0,6.283);g.fill()}}
+  layer(S.b,.22);                                   // LAYER 4  Union Terminal (22% speed)   ◄ IMAGES.midfar
+  layer(S.mid,.55);                                 // LAYER 5  street buildings (55% speed)   ◄ IMAGES.mid
+  // flashing windows, lit shopfronts and the neon BAR sign
+  for(i=0;FX.windows&&i<MID.length;i++){b=MID[i];sx=b.x-camS*.55;if(sx>VW||sx+b.w<0)continue;var top=GY-b.h;
+    for(k=0;k<b.win.length;k+=4){var ty=b.win[k+2],on=ty===1||(ty===2&&((t*1.5+b.win[k+3])|0)%6<1);
+      if(on){var wx=sx+b.win[k],wy=top+b.win[k+1];g.globalAlpha=.9;g.fillStyle='#ffd27a';g.fillRect(wx,wy,b.ww,b.wh);g.globalAlpha=.16;g.fillStyle='#ffb35c';g.fillRect(wx-2,wy-2,b.ww+4,b.wh+4)}}
+    g.globalAlpha=1;
+    if(b.lit&&b.lr){g.globalAlpha=.3;g.fillStyle='#ffb35c';g.fillRect(sx+b.lr[0],GY-b.lr[1],b.lr[2],b.lr[3]);g.globalAlpha=1}
+    if(b.bar){var bo=((t*2)|0)%2;g.fillStyle=bo?'#ff4fa0':'#5a2a4a';g.fillRect(sx+b.w/2-8,GY-30,16,5);if(bo){g.globalAlpha=.4;g.globalCompositeOperation='lighter';g.drawImage(S.glow,sx+b.w/2-17,GY-42,34,34);g.globalAlpha=1;g.globalCompositeOperation='source-over'}}}
+  // Fountain Square water spray
+  var fx=LM.fs-camS*.55;
+  if(FX.spray&&fx>-60&&fx<VW+60){g.fillStyle='#d8f0ff';g.globalAlpha=.85;
+    for(var sd=-1;sd<=1;sd+=2)for(k=0;k<9;k++){var u=(t*.9+k/9)%1;g.beginPath();g.arc(fx+sd*(15+u*17),GY-50-18*u+61*u*u,.7,0,6.283);g.fill()}
+    g.globalAlpha=1}
+  // Roebling Bridge (foreground) + river sparkle
+  var bsx=BR.x0-camS,onBr=bsx<VW&&bsx+BR.w>0;
+  if(onBr){g.drawImage(S.br,bsx,0,BR.w,VH);   // LAYER 6  Roebling Bridge, full speed   ◄ IMAGES.bridge
+    g.fillStyle='#ff9a6a';g.globalAlpha=.6;
+    for(i=0;i<40;i++){var fx2=bsx+hh(i,1)*BR.w;if(fx2>-4&&fx2<VW&&((t*2+i)|0)%3)g.fillRect(fx2,116+hh(i,2)*20,3+hh(i,3)*3,.8)}g.globalAlpha=1}
+  // sidewalk tiles (skipped on the bridge) with lamps and string lights
+  var x0=-mod(camS,360);
+  g.save();if(onBr){g.beginPath();g.rect(0,0,Math.max(0,bsx),VH);g.rect(Math.min(VW,bsx+BR.w),0,VW,VH);g.clip()}
+  for(i=0;i<VW/360+2;i++)g.drawImage(S.walk,x0+i*360-.3,GY-40,360.6,RD-(GY-40));   // LAYER 7  sidewalk tile   ◄ IMAGES.walk
+  g.restore();
+  var sp=120,first=Math.floor(camS/sp)-1,bp=['#ff4f6a','#ffd27a','#5fd0ff','#8aff7a'];
+  for(i=first;i<first+VW/sp+3;i++){var lw=i*sp+60,lx=lw-camS,nx=lx+sp;
+    if(lw+sp>BR.x0&&lw<BR.x0+BR.w)continue;
+    for(var n=0;n<=28;n++){var uu=n/28,bx=lx+7+(nx-lx)*uu,by=GY-30+9*(1-(2*uu-1)*(2*uu-1));
+      if(((t*3|0)+n+i)%3){g.fillStyle=bp[mod(n+i,4)];g.beginPath();g.arc(bx,by,.9,0,6.283);g.fill()}}
+    g.globalCompositeOperation='lighter';g.globalAlpha=.6+.15*Math.sin(t*3+i);g.drawImage(S.glow,lx+7-17,GY-27-17,34,34);g.globalAlpha=1;g.globalCompositeOperation='source-over'}
+  // road, lane dashes, oncoming traffic, then the player's car
+  for(i=0;i<VW/360+2;i++)g.drawImage(S.road,x0+i*360-.3,RD,360.6,VH-RD);   // LAYER 8  road tile   ◄ IMAGES.road
+  g.globalAlpha=.5;g.fillStyle='#efe2f4';for(i=-1;i<VW/28+2;i++)g.fillRect(i*28-mod(camS,28),171,14,1.1);g.globalAlpha=1;
+  for(i=0;i<cars.length;i++){var cr=cars[i];drawCar(mod(cr.x0-cr.v*t-camS,VW+160)-80,cr.y+1,-1,S.car[cr.k],.9,t*8,true)}
+  var px=VW*.12+pr*VW*.5+22,bob=Math.abs(vel)>.3?Math.sin(t*22)*.4:0;
+  drawCar(px,179+bob,1,S.car[6],1.25,camS*.14,true);   // LAYER 9  player car sprite   ◄ IMAGES.cars[6]
+  // warm sunset wash + paper grain
+  g.globalAlpha=.07;g.fillStyle='#ff7a3d';g.fillRect(0,0,VW,VH);g.globalAlpha=1;
+  g.save();g.setTransform(1,0,0,1,0,0);g.globalAlpha=.2;g.fillStyle=grain;g.fillRect(0,0,cv.width,cv.height);g.restore();
+  // HTML signs and overlays
+  var base=(GY+6)*U,Sc=Math.min(1.1,H/800);
+  var sponSc=Math.min(W*.92/560,(118*U-64)/150,6);        // sponsors banner: scales up to fill the screen width
+  var subSc=Math.min(W*.92/860,base*.88/650);
+  place(sched,SX,px,Sc,.3,460);place(spon,PX,px,sponSc,.1,560,118);place(subw,BX,px,subSc,0,860);
+  hero.style.opacity=Math.max(0,1-tp*9);hero.style.pointerEvents=tp>.1?'none':'auto';
+  hint.style.opacity=Math.max(0,1-tp*12);
+  requestAnimationFrame(frame)}
+function place(el,wx,px,Sc,zm,bw,yu){var s=wx-camS,half=bw*Sc*.65;if(s*U<-half||s*U>W+half){el.style.display='none';return}
+  el.style.display='';var z=1+zm*Math.max(0,1-Math.abs(s-(px+13))/(VW*.3));
+  el.style.transform='translate('+(s*U)+'px,'+((yu||GY+6)*U)+'px) scale('+(Sc*z)+')'}
+function size(){W=innerWidth;H=innerHeight;if(W<50||H<50)return false;     // preview frame not laid out yet
+  DPR=Math.min(devicePixelRatio||1,1.5);VW=Math.min(700,Math.max(100,VH*W/H));U=H/VH;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);g.setTransform(cv.width/VW,0,0,cv.height/VH,0,0);build();paint();applyImages();return true}
+var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(size,200)});
+/* paint after the page has appeared (so a sunset gradient is already visible), then start the animation loop */
+var loading=document.getElementById('loading');
+function start(){try{if(!size()){setTimeout(start,100);return}loading.style.display='none';requestAnimationFrame(frame)}
+  catch(e){loading.textContent='Could not paint the scene: '+e.message}}
+setTimeout(start,30);
+
+/* ========== PAGE INTERACTIONS ========== */
+var P={start:0,schedule:Q.sch,explore:Q.sub,enter:0};   // nav link -> scroll progress
+Object.defineProperty(P,'sponsors',{enumerable:true,get:function(){return Q.br+380/(camMax+VW*.5)}});   // car at bridge midspan
+document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){
+  var id=a.getAttribute('href').slice(1);if(!(id in P))return;e.preventDefault();
+  scrollTo({top:P[id]*(track.offsetHeight-innerHeight),behavior:'smooth'});
+  if(id==='enter')setTimeout(function(){document.getElementById('city').focus()},700)})});
+document.getElementById('go').addEventListener('click',function(){
+  var v=document.getElementById('city').value.trim(),m=document.getElementById('msg');
+  m.textContent=/^\S+@\S+\.\S+$/.test(v)?'You’re in. Keep scrolling to drive through the city.':'Enter a valid email so we can send your pass.'});
+// subway map: tap or press Enter on a stop to read about it
+var capEl=document.getElementById('cap'),nodes=document.querySelectorAll('#subway .node');
+function pick(n){nodes.forEach(function(x){x.classList.remove('on')});n.classList.add('on');capEl.textContent=n.dataset.t}
+nodes.forEach(function(n){n.addEventListener('click',function(){pick(n)});
+  n.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(n)}})});
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('train').style.display='none';
+})();
+</script>
+</body>
+</html>
