@@ -102,6 +102,41 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 /* logo in the top-left corner */
 .logo img.mark{height:50px;width:auto;display:block;filter:drop-shadow(0 0 6px rgba(255,255,255,.4)) drop-shadow(0 2px 3px rgba(0,0,0,.35))}
 @media (max-width:520px){.logo img.mark{height:40px}}
+/* ===== phone mode: top-down street ===== */
+.phone .o:not(.inmodal){display:none!important}
+.phone #where{top:70px}
+.phone #hint{top:68vh}
+.card{position:absolute;left:0;top:0;z-index:6;display:block;background:#fff3e2;color:#0b2430;border:3px solid #0f3342;border-radius:12px 18px 12px 20px;padding:8px 10px 9px;text-align:left;font:inherit;cursor:pointer;box-shadow:0 4px 0 rgba(11,36,48,.4);will-change:transform}
+.card:active{transform-origin:center}
+.card h3{font-family:var(--px);font-weight:400;font-size:1.5rem;line-height:1;margin:0 0 4px;color:#1b5367}
+.card p,.card li{font-size:.74rem;line-height:1.3;margin:0}
+.card ul{margin:0;padding:0;list-style:none}.card li{margin:2px 0}.card li b{color:#c4501a}
+.card .tap{display:block;margin-top:6px;font-size:.72rem;font-weight:800;color:#c4501a}
+.card svg{width:100%;height:auto;display:block;background:#fff;border-radius:6px}
+.card.l::after,.card.r::after{content:"";position:absolute;top:22px;width:16px;height:3px;background:#f27230}
+.card.l::after{right:-17px}.card.r::after{left:-17px}
+.card.logo{background:transparent;border:0;box-shadow:none;text-align:center;pointer-events:none;padding:0}
+.card.logo::after{display:none}
+.card.logo img{width:92px;display:block;margin:0 auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.card.logo b{display:block;font-family:var(--px);font-weight:400;font-size:1.6rem;color:#fff;text-shadow:2px 2px 0 #0b2430}
+.card.logo small{color:#ffe9a8;font-weight:700;text-shadow:1px 1px 0 #0b2430}
+.card.banner{background:#0f3342;color:#fff;border-color:#f27230;text-align:center}
+.card.banner::after{display:none}
+.card.banner h3{color:#fff;letter-spacing:.12em;font-size:1.3rem}
+.card.banner .mini{display:flex;gap:6px}.card.banner .mini i{flex:1;font-style:normal;font-weight:800;font-size:.7rem;background:#fff3e2;color:#1b5367;padding:12px 0;border-radius:6px}
+.card.banner .tap{color:#ffe9a8}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(11,36,48,.82);display:none;align-items:flex-end}
+#modal.on{display:flex}
+#modal .sheet{position:relative;width:100%;max-height:90dvh;overflow:auto;background:#fff3e2;color:#0b2430;border-radius:22px 22px 0 0;padding:16px 16px calc(26px + env(safe-area-inset-bottom,0px))}
+#modal h2{font-family:var(--px);font-weight:400;font-size:2.3rem;color:#1b5367;margin:0 40px 10px 0;line-height:1}
+#mclose{position:absolute;right:12px;top:12px;width:38px;height:38px;border:0;border-radius:50%;background:#0f3342;color:#fff;font-size:1.1rem;cursor:pointer}
+#modal .big{font-size:1.15rem;line-height:1.5;margin:0}
+.sch{list-style:none;margin:0;padding:0}.sch li{padding:10px 12px;margin:8px 0;background:#fff;border-left:6px solid #f27230;border-radius:8px;font-size:1.15rem}.sch b{display:block;font-size:.85rem;color:#c4501a}
+.spgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.spgrid div{height:92px;display:grid;place-items:center;background:#fff;border:3px solid #0f3342;border-radius:10px;font-weight:800;color:#1b5367}
+#subway.inmodal{position:relative;left:auto;top:auto;translate:none;transform-origin:0 0;display:block!important;z-index:auto}
+#modal .sub h2{color:#fff;font-size:2rem;margin:0}
+#subway.inmodal .sub{margin-top:34px}
+#subway.inmodal .legs{display:none}#subway.inmodal .subwrap{padding-bottom:0}
 </style>
 </head>
 <body>
@@ -112,6 +147,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 <main>
 <div id="track">
  <div id="stage">
+  
   <canvas id="cv" aria-label="Hand-painted Cincinnati street at sunset with a car driving right"></canvas>
 
   <div class="o" id="sched"><div class="sign"><div class="pole"></div><div class="hex"><h2>SCHEDULE</h2></div>
@@ -168,6 +204,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <div id="msg" role="status"></div>
   </div>
   <div id="loading">Painting the city…</div>
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="sheet"><button id="mclose" aria-label="Close">✕</button><h2 id="mtitle"></h2><div id="mbody"></div></div></div>
   <div id="hint"><span id="hintTxt">Scroll down to drive</span><span class="dn">▼</span></div>
  </div>
 </div>
@@ -175,6 +212,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 <script>
 (function(){
+/* PHONE = narrow screens get the top-down street (see PHONE MODE at the bottom); wider screens get the side-scrolling drive */
+var PHONE=matchMedia('(max-width:700px)').matches;
+if(PHONE)document.body.classList.add('phone');
+matchMedia('(max-width:700px)').addEventListener('change',function(){location.reload()});   // rotating across the breakpoint switches modes
 /* ========== SETTINGS ==========
    Everything is drawn in "units" on a canvas that is 180 units tall (VH).
    GY = ground line under the buildings, RD = top of the road, WL = total world length. */
@@ -545,20 +586,21 @@ function size(){W=innerWidth;H=stage.clientHeight||innerHeight;if(W<50||H<50)ret
   subw.classList.toggle('compact',W<700);build();paint();applyImages();
   stage.style.background=OFF>0?STARS:'';return true}
 var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){
+  if(PHONE){tdResize();return}
   if(innerWidth===W&&VW===MINVW&&(stage.clientHeight||innerHeight)>=50)layout();   // phone toolbar showing/hiding: cheap relayout, no repaint
   else size()},200)});
 /* paint after the page has appeared (so a sunset gradient is already visible), then start the animation loop */
 var loading=document.getElementById('loading');
 function start(){try{if(!size()){setTimeout(start,100);return}loading.style.display='none';requestAnimationFrame(frame)}
   catch(e){loading.textContent='Could not paint the scene: '+e.message}}
-setTimeout(start,30);
+setTimeout(PHONE?startTD:start,30);
 
 /* ========== PAGE INTERACTIONS ========== */
 var P={start:0,schedule:Q.sch,explore:Q.sub,enter:0};   // nav link -> scroll progress
 Object.defineProperty(P,'sponsors',{enumerable:true,get:function(){return Q.br+380/(camMax+VW*.5)}});   // car at bridge midspan
 document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){
   var id=a.getAttribute('href').slice(1);if(!(id in P))return;e.preventDefault();
-  scrollTo({top:P[id]*(track.offsetHeight-innerHeight),behavior:'smooth'});
+  scrollTo({top:PHONE?Math.max(0,TD.nav[id]||0):P[id]*(track.offsetHeight-innerHeight),behavior:'smooth'});
   if(id==='enter')setTimeout(function(){document.getElementById('city').focus()},700)})});
 document.getElementById('go').addEventListener('click',function(){
   var v=document.getElementById('city').value.trim(),m=document.getElementById('msg');
@@ -571,6 +613,179 @@ nodes.forEach(function(n){n.addEventListener('click',function(){pick(n)});
 if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.getElementById('train').style.display='none';
 // the scroll hint says "swipe" on touch screens
 if(matchMedia('(pointer:coarse)').matches)document.getElementById('hintTxt').textContent='Swipe up to drive';
+
+/* ====================================================================
+   PHONE MODE: TOP-DOWN STREET (screens narrower than 700px)
+   The page scroll IS the camera (cam = scrollY), so the street moves exactly with your finger.
+   The car drives down the screen. Roadside cards rise from below; tap one for a big readable view.
+   Parallax: ground = 1x, rooftops are drawn slightly bigger (1.07x), towers and tree crowns bigger still,
+   so tall things drift faster than the street. Same palette, ginkgos and landmarks as the desktop drive.
+   ==================================================================== */
+var TD={nav:{start:0,enter:0}},td={img:{}},tdR=[],tdT=[],tdCars=[],tdLM=[],tdCardEls=[],TDV=8;
+var WLtd=5600;                                                          // length of the street in px (= scroll distance)
+var BRG={a:1750,b:2950,t1:1860,t2:2840,ban:2300},FSY=520,UTY=3330,UCY=3860;   // world y of each stop: bridge, fountain, terminal, UC
+var roofPal=[['#1f5f78','#13404f'],['#2c6e8a','#1b4a5e'],['#1a5267','#0f3342'],['#245a72','#143c4e'],['#2a6078','#173f52'],['#1c5870','#103a4a'],['#b5503a','#7e2f22'],['#e08a3a','#a85a1f']];
+var TDWHERE=[[0,'Downtown Cincinnati'],[430,'Fountain Square'],[880,'About us'],[1250,'Schedule'],[1700,'Roebling Suspension Bridge'],[2250,'Our sponsors'],[3050,'Union Terminal'],[3650,'University of Cincinnati'],[4200,'Explore Rev UC'],[4800,'1819 Innovation Hub']];
+function tdMk(w,h){var c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);var x=c.getContext('2d');x.scale(2,2);return{c:c,x:x}}
+
+/* ---------- sprites (painted once with the same brush helpers) ---------- */
+function tdCanopy(c,x,y,d){circ(c,x+3,y+4,d/2,'#0b2430',.28);foliage(c,x-d/2,y-d/2,d,d,GINK,['#fff0b8','#ffe27a'],'#8a5a12')}   // yellow ginkgo crown seen from above
+function tdRoof(i){var w=td.side,h=150,s=tdMk(w,h),c=s.x,col=roofPal[i%roofPal.length],j,n,t,px,py;   // generic city rooftop
+  poly(c,0,0,w,h,'#0b2430',.3,.35);poly(c,1,1,w-3,h-4,col[0],1);strokes(c,1,1,w-3,h-4,col[0],w*h/14,12,.35,1.4);strokes(c,1,1,w-3,h-4,col[1],w*h/45,7,.3,1);
+  poly(c,1,1,w-3,3,col[1],.4);poly(c,1,h-5,w-3,3,col[1],.4);poly(c,1,1,3,h-4,col[1],.4);poly(c,w-5,1,3,h-4,col[1],.4);          // parapet
+  n=2+(rnd()*3|0);for(j=0;j<n;j++){t=rnd();px=10+rnd()*Math.max(4,w-44);py=10+rnd()*(h-40);
+    if(t<.4){poly(c,px,py,20,16,'#9fb4be',.3);circ(c,px+10,py+8,5.5,'#33505e',1);circ(c,px+10,py+8,3,'#6a8794',1)}              // AC unit
+    else if(t<.65){circ(c,px+9,py+9,9,'#b5503a',1);circ(c,px+9,py+9,6,'#d9764a',1)}                                              // water tank
+    else if(t<.85){poly(c,px,py,22,14,'#8fd0e0',.3,.9);c.strokeStyle='#0f2b38';c.lineWidth=.6;c.beginPath();c.moveTo(px,py);c.lineTo(px+22,py+14);c.moveTo(px+22,py);c.lineTo(px,py+14);c.stroke()}   // skylight
+    else foliage(c,px,py,22,18,GINK,['#fff0b8'],'#8a5a12')}                                                                       // roof garden
+  return s.c}
+function tdCarSpr(col){var s=tdMk(20,36),c=s.x;poly(c,1,2,18,32,'#0b2430',.3,.35);poly(c,2,1,16,32,col,.8);strokes(c,2,1,16,32,col,10,8,.35,1);
+  poly(c,4,8,12,9,'#bfe3ff',.3,.9);poly(c,4,22,12,6,'#bfe3ff',.3,.8);poly(c,5,17,10,5,dk(col,25),.3);
+  poly(c,3,2,4,2.4,'#fff0b8',.2);poly(c,13,2,4,2.4,'#fff0b8',.2);poly(c,3,32,4,2,'#ff4a4a',.2);poly(c,13,32,4,2,'#ff4a4a',.2);   // headlights (top) + tail lights
+  c.strokeStyle='rgba(11,36,48,.6)';c.lineWidth=.7;c.strokeRect(2,1,16,32);return s.c}
+function tdFountain(w,h){var s=tdMk(w,h),c=s.x,cx=w/2,cy=h/2,r=Math.min(w,h)*.34;   // Fountain Square from above
+  poly(c,0,0,w,h,'#d8b898',.6);strokes(c,0,0,w,h,'#e8c8a8',w*h/30,10,.4,1.2);strokes(c,0,0,w,h,'#b89870',w*h/60,8,.3,.8);
+  circ(c,cx,cy,r+6,'#a88860',1);circ(c,cx,cy,r+3,'#6a8a9a',1);circ(c,cx,cy,r,'#4fa0b8',1);
+  c.save();c.beginPath();c.arc(cx,cy,r,0,6.283);c.clip();strokes(c,cx-r,cy-r,2*r,2*r,'#bfe8ff',50,6,.4,.9);c.restore();
+  circ(c,cx,cy,r*.34,'#7a8a9a',1);circ(c,cx,cy,r*.2,'#5f8a70',1);poly(c,cx-r*.5,cy-1.6,r,3.2,'#5f8a70',.3);poly(c,cx-1.6,cy-r*.5,3.2,r,'#5f8a70',.3);   // statue + outstretched arms
+  tdCanopy(c,12,14,34);tdCanopy(c,w-12,h-14,36);return s.c}
+function tdTerminal(w,h){var s=tdMk(w,h),c=s.x,R=Math.min(w-20,88),cx0=w-R-6,cy=h/2,i,a;   // Union Terminal: half dome facing the street
+  poly(c,0,0,w,h,'#c8a888',.6);strokes(c,0,0,w,h,'#e0c4a0',w*h/40,10,.4,1.2);
+  wall(c,0,cy-62,cx0+8,124,'#3d7a8f');poly(c,0,cy-62,cx0+8,6,'#2f6a80',.3);poly(c,0,cy+56,cx0+8,6,'#2f6a80',.3);
+  for(i=R;i>=R*.45;i-=R*.11){c.fillStyle=((i/R*10)|0)%2?'#4a8aa0':'#3d7a8f';c.beginPath();c.arc(cx0,cy,i,-Math.PI/2,Math.PI/2);c.closePath();c.fill()}
+  c.strokeStyle='rgba(143,196,212,.7)';c.lineWidth=.8;for(i=0;i<7;i++){a=-Math.PI/2+i*Math.PI/6;c.beginPath();c.moveTo(cx0,cy);c.lineTo(cx0+Math.cos(a)*R,cy+Math.sin(a)*R);c.stroke()}
+  circ(c,cx0,cy,R*.16,'#f7c531',1);tdCanopy(c,14,h-16,34);return s.c}
+function tdCampus(w,h,right){var s=tdMk(w,h),c=s.x;   // UC: lawn, brick halls, paths (right side also has the UC roof banner)
+  poly(c,0,0,w,h,'#6b8f3a',.6);strokes(c,0,0,w,h,'#9ab23a',w*h/20,9,.4,1.3);strokes(c,0,0,w,h,'#4a7a3a',w*h/50,7,.3,1);
+  poly(c,w*.45,0,6,h,'#e8d9b0',.5);poly(c,0,h*.5,w,6,'#e8d9b0',.5);
+  wall(c,6,10,w*.5,46,'#a8452f');wall(c,6,h-62,w*.5,50,'#a8452f');poly(c,10,14,w*.5-8,6,'#8a3a26',.3);
+  if(right){poly(c,w*.55,h*.3,w*.4,28,'#c4202e',.3);c.fillStyle='#fff';c.font='bold 24px Georgia,serif';c.fillText('UC',w*.55+10,h*.3+23)}
+  tdCanopy(c,w*.8,h*.2,38);tdCanopy(c,w*.25,h*.5,40);tdCanopy(c,w*.82,h*.85,36);return s.c}
+function tdClockRoof(){var s=tdMk(44,44),c=s.x,cols=['#2f6a80','#12384a','#0b2430','#245c74'],pts=[[2,2,42,2],[42,2,42,42],[42,42,2,42],[2,42,2,2]];   // clock tower pyramid roof
+  poly(c,0,0,44,44,'#0b2430',.4,.4);pts.forEach(function(p,i){c.fillStyle=cols[i];c.beginPath();c.moveTo(22,22);c.lineTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.closePath();c.fill()});circ(c,22,22,2.4,'#f7c531',1);return s.c}
+function tdTower(){var s=tdMk(58,50),c=s.x;poly(c,0,0,58,50,'#0b2430',.3,.35);wall(c,1,1,54,46,'#b98f6a');poly(c,8,8,38,30,'#8a6a4a',.4);circ(c,27,23,4,'#3f6fd0',1);return s.c}   // Roebling stone tower top
+function tdHub(w,h){var s=tdMk(w,h),c=s.x,x=w*.6,i;   // 1819 Innovation Hub roof: buff-brick wing, glass corner, big lettering
+  poly(c,0,0,w,40,'#d4a27c',.5);strokes(c,0,0,w,40,'#e0b992',w*2,10,.4,1.2);                                   // entry plaza
+  wall(c,0,40,x,h-40,'#d8b987');strokes(c,0,40,x,h-40,'#b99a68',w*3,14,.3,.8);                                // buff-brick roof
+  poly(c,x,40,w-x,h-40,'#3f7f98',.6);strokes(c,x,40,w-x,h-40,'#8fc4d4',90,10,.35,1.2);strokes(c,x,60,w-x,h-80,'#f5a05a',26,12,.3,1.6);   // glass roof, sunset reflected
+  for(i=x;i<w;i+=12)poly(c,i,40,1.2,h-40,'#1f4a5a',.1,.9);for(i=40;i<h;i+=14)poly(c,x,i,w-x,1,'#1f4a5a',.1,.9);
+  poly(c,0,26,w,16,'#2c3a44',.3);poly(c,w/2-26,26,52,16,'#c9a56a',.3);poly(c,w/2-.5,26,1,16,'#2c3a44',.1);       // dark canopy + glowing doors facing the street
+  poly(c,w*.06,h*.34,w*.5,h*.34,'#1b2a34',.5);c.fillStyle='#fff';c.textAlign='center';
+  c.font='bold '+Math.round(Math.min(70,w*.17))+'px Arial,sans-serif';c.fillText('1819',w*.31,h*.34+Math.min(64,w*.16));
+  c.font='bold '+Math.round(Math.min(20,w*.05))+'px Arial,sans-serif';c.fillText('INNOVATION HUB',w*.31,h*.34+Math.min(64,w*.16)+Math.min(26,w*.065));
+  c.font='bold 9px Arial,sans-serif';c.fillText('WHERE NEXT HAPPENS',w*.31,h*.34+Math.min(64,w*.16)+Math.min(44,w*.11));c.textAlign='left';
+  for(i=0;i<3;i++){var a=poly;a(c,w*.08+i*30,h-52,20,16,'#9fb4be',.3);circ(c,w*.08+i*30+10,h-44,5.5,'#33505e',1)}   // rooftop units
+  tdCanopy(c,w*.1,22,40);tdCanopy(c,w*.9,22,40);return s.c}
+
+/* ---------- layout, world and painting ---------- */
+function tdLayout(){W=innerWidth;H=stage.clientHeight||innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+  td.RW=Math.round(Math.min(92,W*.24));td.rl=Math.round((W-td.RW)/2);td.rr=td.rl+td.RW;td.SW=18;td.side=td.rl-td.SW;td.cw=Math.min(160,td.side+20);
+  td.cx=W/2;td.HUBY=WLtd+H*.44+90;track.style.height=(WLtd+H)+'px';
+  cv.style.top='0';cv.style.height='100%';cv.style.bottom='auto';cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);g.setTransform(DPR,0,0,DPR,0,0)}
+function tdBuild(){seed=31;tdR=[];tdT=[];tdLM=[];tdCars=[];var y,i,s=td.side,L=0,R=td.rr+td.SW;
+  var holes={L:[[UTY-125,UTY+125],[BRG.a-40,BRG.b+40],[UCY-130,UCY+130]],R:[[FSY-110,FSY+110],[BRG.a-40,BRG.b+40],[UCY-130,UCY+130]]};
+  ['L','R'].forEach(function(sd){y=-60;while(y<td.HUBY-30){var hit=0;holes[sd].forEach(function(hl){if(y>hl[0]-20&&y<hl[1])hit=hl[1]});if(hit){y=hit;continue}
+    var h=84+(rnd()*66|0);tdR.push({sd:sd,y:y,h:h,v:rnd()*TDV|0,k:rnd()<.28?2:1,b:rnd()<.35?1:0,ph:rnd()*9});y+=h+8}});
+  var side=0;for(y=60;y<td.HUBY-60;y+=120+rnd()*80){side^=1;if(y>BRG.a-30&&y<BRG.b+30)continue;var d=46+(rnd()*3|0)*11;
+    tdT.push({x:side?td.rr+td.SW/2+14-rnd()*5:td.rl-td.SW/2-14+rnd()*5,y:y,v:(d-46)/11|0})}
+  tdLM.push({key:'fs',x:R,y:FSY-(s+16)/2,w:s,h:s+16,k:0});tdLM.push({key:'ut',x:0,y:UTY-115,w:s,h:230,k:1});
+  tdLM.push({key:'ucl',x:0,y:UCY-125,w:s,h:250,k:1});tdLM.push({key:'ucr',x:R,y:UCY-125,w:s,h:250,k:1});tdLM.push({key:'clock',x:s*.5-22,y:UCY-40,w:44,h:44,k:2});
+  tdLM.push({key:'tw',x:td.rl-12-58,y:BRG.t1-25,w:58,h:50,k:2});tdLM.push({key:'tw',x:td.rr+12,y:BRG.t1-25,w:58,h:50,k:2});
+  tdLM.push({key:'tw',x:td.rl-12-58,y:BRG.t2-25,w:58,h:50,k:2});tdLM.push({key:'tw',x:td.rr+12,y:BRG.t2-25,w:58,h:50,k:2});
+  tdLM.push({key:'hub',x:0,y:td.HUBY,w:W,h:330,k:1});
+  for(i=0;i<8;i++)tdCars.push({y0:rnd()*1400,v:80+rnd()*80,k:i%6})}
+function tdPaint(){seed=21;var i,c,s,y,RW=td.RW,rl=td.rl,rr=td.rr,SW=td.SW;
+  s=tdMk(W,360);c=s.x;td.gnd=s.c;                                              // repeating street tile: asphalt, sidewalks, curbs, center line
+  poly(c,-2,-2,W+4,364,'#1b5367',.4);strokes(c,0,0,W,360,'#245c74',W*4,12,.3,1.2);
+  [[rl-SW,rl],[rr,rr+SW]].forEach(function(sd){poly(c,sd[0],-2,SW,364,'#d4a27c',.4);for(y=-4;y<364;y+=12){poly(c,sd[0]+1,y,SW/2-1,11,jit('#e0b992',34),.7,.8);poly(c,sd[0]+SW/2,y+5,SW/2-1,11,jit('#c08f6a',34),.7,.8)}});
+  poly(c,rl-2,-2,2.4,364,'#0f3342',.2);poly(c,rr,-2,2.4,364,'#0f3342',.2);
+  poly(c,rl,-2,RW,364,'#1f4458',.4);strokes(c,rl,0,RW,360,'#33647c',RW*3,10,.28,1.2);strokes(c,rl,0,RW,360,'#0d2230',RW*2,8,.3,1);
+  poly(c,W/2-2.2,-2,1.2,364,'#f7b538',.15);poly(c,W/2+1,-2,1.2,364,'#f7b538',.15);strokes(c,rl-SW,0,2*SW+RW,360,'#f7c531',40,3,.55,1);   // double yellow + fallen ginkgo leaves
+  td.roofs=[];for(i=0;i<TDV;i++)td.roofs.push(tdRoof(i));
+  td.canopy=[46,57,68].map(function(d){var q=tdMk(d+8,d+8);tdCanopy(q.x,(d+8)/2,(d+8)/2,d);return q.c});
+  td.img.fs=tdFountain(td.side,td.side+16);td.img.ut=tdTerminal(td.side,230);td.img.ucl=tdCampus(td.side,250,0);td.img.ucr=tdCampus(td.side,250,1);
+  td.img.clock=tdClockRoof();td.img.tw=tdTower();td.img.hub=tdHub(W,330);
+  td.car=['#2f7fd0','#f7b538','#3aa56a','#4aa3c0','#e8e0d0','#9fd0e0'].map(tdCarSpr);td.me=tdCarSpr('#f27230');
+  s=tdMk(40,40);c=s.x;var gr=c.createRadialGradient(20,20,0,20,20,20);gr.addColorStop(0,'rgba(255,214,130,.95)');gr.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=gr;c.fillRect(0,0,40,40);td.glow=s.c;
+  var gc=document.createElement('canvas');gc.width=gc.height=180;var gx=gc.getContext('2d');
+  for(i=0;i<2600;i++){gx.globalAlpha=.25+rnd()*.35;gx.fillStyle=rnd()>.5?'#fff3e2':'#0f2b38';var z=1+rnd()*1.6;gx.fillRect(rnd()*180,rnd()*180,z,z)}
+  td.grain=g.createPattern(gc,'repeat')}
+
+/* ---------- roadside cards (tap = bigger, readable view) ---------- */
+function tdCards(){tdCardEls.forEach(function(e){e.el.remove()});tdCardEls=[];
+  var logo=document.querySelector('.logo img.mark').src,cw=td.cw,Lx=6,Rx=W-cw-6;
+  var defs=[
+   {id:'logo',y:470,x:Lx,cls:'logo',html:'<img src="'+logo+'" alt="RevUC logo"><b>RevUC</b><small>Welcome to the city</small>'},
+   {id:'about',y:880,x:Lx,html:'<h3>About us</h3><p>UC’s student-run hackathon. Build, learn and ship in a weekend.</p><span class="tap">Tap to read ▸</span>'},
+   {id:'schedule',y:1250,x:Rx,html:'<h3>Schedule</h3><ul><li><b>Fri 6–8 PM</b> Check-in</li><li><b>Fri 9 PM</b> Opening</li><li><b>Sat 10 AM</b> Workshops</li></ul><span class="tap">Full schedule ▸</span>'},
+   {id:'sponsors',y:BRG.ban,x:8,w:W-16,cls:'banner',html:'<h3>SPONSORS</h3><div class="mini"><i>Logo</i><i>Logo</i><i>Logo</i><i>Logo</i></div><span class="tap">Tap to enlarge ▸</span>'},
+   {id:'map',y:4200,x:Rx,html:'<h3>Explore Rev UC</h3><svg viewBox="0 0 120 56" aria-hidden="true"><path d="M10 12C34 10 50 26 70 16S104 22 96 40 56 48 40 36 20 36 10 12" fill="none" stroke="#0b2430" stroke-width="4"/><path d="M10 12C34 10 50 26 70 16S104 22 96 40 56 48 40 36 20 36 10 12" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="10" cy="12" r="5" fill="#ffe9a8" stroke="#0b2430" stroke-width="2"/><circle cx="70" cy="16" r="5" fill="#ffe9a8" stroke="#0b2430" stroke-width="2"/><circle cx="96" cy="40" r="5" fill="#ffe9a8" stroke="#0b2430" stroke-width="2"/><circle cx="40" cy="36" r="5" fill="#f27230" stroke="#0b2430" stroke-width="2"/></svg><span class="tap">Open the map ▸</span>'},
+   {id:'register',y:5000,x:Lx,html:'<h3>Register</h3><p>Save your seat in the city.</p><span class="tap">Sign up ▸</span>'}];
+  defs.forEach(function(d){var el=document.createElement(d.cls==='logo'?'div':'button');el.className='card '+(d.cls||'')+(d.x<W/2?' l':' r');el.style.width=(d.w||cw)+'px';el.style.display='none';el.innerHTML=d.html;
+    if(d.cls!=='logo')el.addEventListener('click',function(){tdOpen(d.id)});stage.insertBefore(el,hero);tdCardEls.push({el:el,y:d.y,x:d.x,id:d.id})});
+  TD.nav={start:0,enter:0,schedule:1250-H*.4,sponsors:BRG.ban-H*.4,explore:4200-H*.4}}
+
+/* ---------- big view (modal) ---------- */
+var tdModal=document.getElementById('modal'),tdBody=document.getElementById('mbody'),tdTitle=document.getElementById('mtitle');
+var TDM={about:['About us','<p class="big">RevolutionUC is UC’s student-run hackathon. Build, learn and ship something in a weekend. All majors welcome.</p>'],
+ schedule:['Schedule','<ul class="sch"><li><b>Fri, 6–8 PM</b>Check-in &amp; dinner</li><li><b>Fri, 9 PM</b>Opening &amp; team mixer</li><li><b>Sat, 10 AM–12 PM</b>Workshops</li><li><b>Sun, 11 AM</b>Demos &amp; awards</li></ul>'],
+ sponsors:['Sponsors','<div class="spgrid"><div>Logo</div><div>Logo</div><div>Logo</div><div>Logo</div></div>'],map:['Explore Rev UC','']};
+function tdOpen(id){if(id==='register'){scrollTo({top:0,behavior:'smooth'});setTimeout(function(){document.getElementById('city').focus()},700);return}
+  var m=TDM[id];tdTitle.textContent=m[0];tdTitle.style.display=id==='map'?'none':'';tdBody.innerHTML=m[1];tdModal.classList.add('on');   // show first so the width can be measured
+  if(id==='map'){subw.classList.add('inmodal');tdBody.appendChild(subw);var k=(tdBody.clientWidth)/540;subw.style.transform='scale('+k+')';tdBody.style.height=(subw.offsetHeight*k-70*k)+'px'}
+  else tdBody.style.height='';
+  tdModal.classList.add('on');document.getElementById('mclose').focus()}
+function tdClose(){tdModal.classList.remove('on');if(subw.parentNode===tdBody){subw.classList.remove('inmodal');subw.style.transform='';stage.appendChild(subw)}tdBody.style.height=''}
+document.getElementById('mclose').addEventListener('click',tdClose);
+tdModal.addEventListener('click',function(e){if(e.target===tdModal)tdClose()});
+addEventListener('keydown',function(e){if(e.key==='Escape')tdClose()});
+
+/* ---------- per-frame drawing ---------- */
+function tdBlit(img,x,wy,w,h,S,flip,cam){var C=H*.46,cx=td.cx,py=wy+h/2-cam,sx=cx+(x+w/2-cx)*S,sy=C+(py-C)*S,dw=w*S,dh=h*S;   // parallax: scale about screen center
+  if(sy+dh/2<-10||sy-dh/2>H+10)return null;
+  if(flip){g.save();g.translate(sx,sy);g.scale(-1,1);g.drawImage(img,-dw/2,-dh/2,dw,dh);g.restore()}else g.drawImage(img,sx-dw/2,sy-dh/2,dw,dh);
+  return[sx,sy,dw,dh]}
+function tdFrame(now){
+  var tt=now/1000,cam=scrollY,i,y,k,rl=td.rl,rr=td.rr,cx=td.cx,RW=td.RW;
+  g.globalAlpha=1;g.fillStyle='#1b5367';g.fillRect(0,0,W,H);
+  for(y=-mod(cam,360);y<H;y+=360)g.drawImage(td.gnd,0,y,W,360.7);                          // street
+  var by0=BRG.a-cam,by1=BRG.b-cam;                                                         // Roebling Bridge: river on both sides, rails and cables
+  if(by1>0&&by0<H){var a=Math.max(0,by0),b=Math.min(H,by1);g.fillStyle='#1f5f78';g.fillRect(0,a,rl-12,b-a);g.fillRect(rr+12,a,W-rr-12,b-a);
+    g.fillStyle='#ff9a6a';g.globalAlpha=.55;for(i=0;i<50;i++){var ry=a+mod(hh(i,2)*(b-a)+tt*9,b-a),rx=hh(i,1)*W;if(rx<rl-14||rx>rr+14)g.fillRect(rx,ry,6+hh(i,3)*6,1)}g.globalAlpha=1;
+    g.fillStyle='#b98f6a';g.fillRect(rl-12,a,4,b-a);g.fillRect(rr+8,a,4,b-a);g.fillStyle='#3f6fd0';g.fillRect(rl-7,a,2,b-a);g.fillRect(rr+5,a,2,b-a);
+    for(y=Math.ceil(BRG.a/14)*14;y<BRG.b;y+=14){var sy2=y-cam;if(sy2<-3||sy2>H+3)continue;g.fillRect(rl-7,sy2,7,1);g.fillRect(rr,sy2,7,1)}}
+  g.globalAlpha=.4;g.fillStyle='#efe2f4';for(k=0;k<2;k++)for(y=-mod(cam,56)-56;y<H;y+=56)g.fillRect(cx+(k?1:-1)*RW/4-1,y,2,22);g.globalAlpha=1;   // lane dashes
+  var bp=['#fff3c4','#ffd966','#ffb347','#ffe9a8','#ffffff'];                                // lamps + warm string lights across the street
+  for(y=Math.floor(cam/150)*150-150;y<cam+H+150;y+=150){if(y>BRG.a-40&&y<BRG.b+40)continue;if(y>td.HUBY-60)continue;var ly=y-cam,li=y/150|0;
+    if(li%2===0){g.strokeStyle='rgba(11,36,48,.55)';g.lineWidth=.8;g.beginPath();g.moveTo(rl-4,ly);g.lineTo(rr+4,ly);g.stroke();
+      for(k=0;k<=6;k++)if(((tt*3|0)+k+li)%3){g.fillStyle=bp[mod(k+li,5)];g.beginPath();g.arc(rl-4+(RW+8)*k/6,ly,1.6,0,6.283);g.fill()}}
+    [rl-4,rr+4].forEach(function(lx){g.fillStyle='#0f2b38';g.beginPath();g.arc(lx,ly,3,0,6.283);g.fill();g.globalCompositeOperation='lighter';g.globalAlpha=.55+.15*Math.sin(tt*3+li);g.drawImage(td.glow,lx-20,ly-20,40,40);g.globalAlpha=1;g.globalCompositeOperation='source-over'})}
+  for(i=0;i<tdCars.length;i++){var cr=tdCars[i],cy=mod(cr.y0-cr.v*tt-cam,H+300)-150;                // oncoming traffic (right lane, heading up)
+    g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,220,140,.12)';g.beginPath();g.moveTo(cx+RW/4-6,cy-16);g.lineTo(cx+RW/4+6,cy-16);g.lineTo(cx+RW/4+10,cy-48);g.lineTo(cx+RW/4-10,cy-48);g.closePath();g.fill();g.globalCompositeOperation='source-over';
+    g.drawImage(td.car[cr.k],cx+RW/4-9,cy-17,18,32)}
+  var carY=H*(.78-.34*Math.min(1,cam/260)),carX=cx-RW/4+Math.sin(cam*.012)*.8;                      // the player's car (drives down the screen)
+  g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,220,140,.17)';g.beginPath();g.moveTo(carX-6,carY+16);g.lineTo(carX+6,carY+16);g.lineTo(carX+11,carY+58);g.lineTo(carX-11,carY+58);g.closePath();g.fill();g.globalCompositeOperation='source-over';
+  g.save();g.translate(carX,carY);g.rotate(Math.PI);g.drawImage(td.me,-9.5,-17,19,34);g.restore();
+  for(i=0;i<tdR.length;i++){var r=tdR[i];if(r.k!==1)continue;var q=tdBlit(td.roofs[r.v],r.sd==='L'?0:rr+td.SW,r.y,td.side,r.h,1.07,r.sd==='R',cam);    // rooftops (1.07x)
+    if(q&&r.b&&((tt*1.3+r.ph)|0)%2){g.fillStyle='#ff6a3b';g.beginPath();g.arc(q[0]+(r.sd==='L'?-1:1)*(q[2]/2-8),q[1]-q[3]/2+8,1.8,0,6.283);g.fill()}}                 // blinking rooftop beacons
+  for(i=0;i<tdLM.length;i++){var m=tdLM[i];if(m.k<2)tdBlit(td.img[m.key],m.x,m.y,m.w,m.h,m.k?1.05:1,false,cam)}                         // plazas + landmarks
+  for(i=0;i<tdR.length;i++){var r2=tdR[i];if(r2.k===2)tdBlit(td.roofs[r2.v],r2.sd==='L'?0:rr+td.SW,r2.y,td.side,r2.h,1.17,r2.sd==='R',cam)}        // tall roofs (1.17x)
+  var fy=FSY-cam;if(fy>-80&&fy<H+80){var fx=rr+td.SW+td.side/2;g.fillStyle='#d8f0ff';for(i=0;i<28;i++){var rad=8+((tt*22+i*6)%30);g.globalAlpha=1-(rad-8)/30;g.beginPath();g.arc(fx+Math.cos(i*.9)*rad,fy+Math.sin(i*.9)*rad,1.1,0,6.283);g.fill()}g.globalAlpha=1}
+  for(i=0;i<tdT.length;i++){var tr=tdT[i];tdBlit(td.canopy[tr.v],tr.x-(46+tr.v*11+8)/2,tr.y,46+tr.v*11+8,46+tr.v*11+8,1.12,false,cam)}        // ginkgo crowns (1.12x)
+  for(i=0;i<tdLM.length;i++){var m2=tdLM[i];if(m2.k===2)tdBlit(td.img[m2.key],m2.x,m2.y,m2.w,m2.h,1.2,false,cam)}                              // towers (1.2x)
+  g.fillStyle='#0b2430';g.globalAlpha=.09;[[.2,.0,.7],[.65,.4,.9],[.35,.8,.6]].forEach(function(p,j){g.beginPath();g.ellipse(((p[0]*W+tt*6*(j+1))%(W+300))-120,mod(p[1]*H*3-cam*1.5,H+360)-180,150,70,.3,0,6.283);g.fill()});g.globalAlpha=1;   // drifting cloud shadows
+  var wg=g.createLinearGradient(0,0,W,H);wg.addColorStop(0,'rgba(255,170,70,0)');wg.addColorStop(1,'rgba(255,150,60,.2)');g.fillStyle=wg;g.fillRect(0,0,W,H);   // sunset light
+  g.save();g.setTransform(1,0,0,1,0,0);g.globalAlpha=.18;g.fillStyle=td.grain;g.fillRect(0,0,cv.width,cv.height);g.restore();
+  for(i=0;i<tdCardEls.length;i++){var ce=tdCardEls[i],cyy=ce.y-cam;if(cyy<-260||cyy>H+40){if(ce.on){ce.el.style.display='none';ce.on=0}continue}
+    if(!ce.on){ce.el.style.display='';ce.on=1}ce.el.style.transform='translate('+ce.x+'px,'+cyy+'px)'}
+  hero.style.opacity=Math.max(0,1-cam/200);hero.style.pointerEvents=cam>40?'none':'auto';hint.style.opacity=Math.max(0,1-cam/120);
+  var cw2=cam+carY,wh=TDWHERE[0];for(i=0;i<TDWHERE.length;i++)if(cw2>=TDWHERE[i][0]+ (i?0:0)-120)wh=TDWHERE[i];
+  if(whereTxt.textContent!==wh[1])whereTxt.textContent=wh[1];where.style.opacity=Math.min(1,Math.max(0,(cam-120)/120));prog.style.width=Math.min(100,cam/WLtd*100)+'%';
+  requestAnimationFrame(tdFrame)}
+function startTD(){try{tdLayout();tdBuild();tdPaint();td.pw=W;tdCards();subw.classList.add('compact');hint.style.top=(H*.68)+'px';loading.style.display='none';requestAnimationFrame(tdFrame)}
+  catch(e){loading.textContent='Could not paint the street: '+e.message}}
+function tdResize(){tdLayout();tdBuild();if(td.pw!==W){tdPaint();td.pw=W}tdCards();hint.style.top=(H*.68)+'px'}   // toolbar show/hide only re-lays out; a width change repaints
+
 })();
 </script>
 </body>
