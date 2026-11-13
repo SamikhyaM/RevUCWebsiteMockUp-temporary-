@@ -34,51 +34,100 @@ figcaption{font-size:.8rem;opacity:.8;margin-top:4px}
 pre{background:#120a22;border:2px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:.85rem;line-height:1.45}
 ul{padding-left:1.2rem}li{margin:4px 0}
 code{background:#120a22;padding:1px 5px;border-radius:4px}
+
+.tabs{display:flex;gap:8px;margin:22px 0 4px;flex-wrap:wrap}
+.tabs button{font-size:1.05rem;padding:10px 16px;background:#2a1a44;color:#fff3e2;border:2px solid var(--line)}
+.tabs button.on{background:var(--gold);color:#1a0f2e}
+#prevp{width:100%;max-width:390px;display:block;border:3px solid var(--line);border-radius:14px;background:#1b5367}
+table{border-collapse:collapse;width:100%;font-size:.88rem;margin:10px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:#2a1a44;color:var(--gold)}
+.note{background:#2a1a44;border-left:5px solid var(--gold);padding:10px 14px;border-radius:6px;margin:12px 0}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <main>
-
 <h1>Layer Lab</h1>
-<p class="lead">Every layer of the painted Cincinnati drive, pulled apart. Toggle layers, change their parallax speed, reorder them, and drop in your own images to build a panorama. Everything below is made by the same painting code as the main page.</p>
+<p class="lead">Every layer of the RevUC drive, pulled apart: the desktop side-scroll and the phone top-down street. Toggle layers, change their parallax, reorder them, drop in your own images, save each layer as a PNG, and see exactly where replacement artwork goes. It uses the same painting code as the real page, so the palette (logo teal and orange), ginkgos and the photo-based 1819 Hub are all here.</p>
 
-<h2>Live parallax preview</h2>
-<canvas id="prev" aria-label="Layer preview"></canvas>
-<div class="bar"><label>Camera <input type="range" id="cam" min="0" max="1000" value="0"></label><label><input type="checkbox" id="auto" checked> Auto-drive</label></div>
+<div class="tabs"><button class="on" data-tab="d">Desktop (side-scroll)</button><button data-tab="p">Phone (top-down)</button></div>
 
+<section id="tab-d">
+<h2>Live preview: desktop</h2>
+<canvas id="prev" aria-label="Desktop layer preview"></canvas>
+<div class="bar"><label>Camera <input type="range" id="camD" min="0" max="1000" value="0"></label><label><input type="checkbox" id="autoD" checked> Auto-drive</label></div>
 <h2>Layers (bottom of the list is drawn last, in front)</h2>
 <p>Speed is the parallax factor: 0 stays put, 1 moves with the road. Far things use small numbers, near things use big ones.</p>
-<div id="layers"></div>
-<p><label class="upl">+ Add your own image layer <input id="file" type="file" accept="image/*" multiple hidden></label> Wide PNG/WebP with transparency works best. It is scaled to the scene height and repeats sideways.</p>
-
+<div id="layersD"></div>
+<p><label class="upl">+ Add your own image layer <input id="fileD" type="file" accept="image/*" multiple hidden></label> A wide PNG/WebP works best. It is scaled to the scene height and repeats sideways.</p>
 <h2>Each layer as its own image</h2>
-<p>Right-click any canvas and choose “Save image as” to get it as a PNG. The checkerboard is transparency.</p>
-<div id="gal"></div>
-
+<p>Right-click a canvas and choose “Save image as” to get a PNG. The checkerboard is transparency.</p>
+<div id="galD"></div>
 <h2>Elements you can draw with</h2>
-<p>These are single pieces made by the brush helpers. Reuse them in your own layers.</p>
+<p>Single pieces made by the brush helpers, including the yellow ginkgo and the 1819 Hub.</p>
 <div class="grid" id="cat"></div>
+<h2>Replacing desktop layers with images (IMAGES)</h2>
+<table><tr><th>Key</th><th>What it replaces</th><th>Parallax</th><th>Export size (3 px per unit)</th></tr>
+<tr><td>sky</td><td>sunset bands, clouds</td><td>2%</td><td>any width × 540 px</td></tr>
+<tr><td>sun</td><td>sun disc + halo</td><td>3%</td><td>240 × 240 px</td></tr>
+<tr><td>far</td><td>far skyline + downtown towers</td><td>10%</td><td>any width × 540 px</td></tr>
+<tr><td>midfar</td><td>Union Terminal</td><td>22%</td><td>any width × 540 px</td></tr>
+<tr><td>mid</td><td>street buildings, ginkgos, Fountain Square, UC, 1819 Hub</td><td>55%</td><td>any width × 540 px</td></tr>
+<tr><td>bridge</td><td>Roebling Bridge strip</td><td>100%</td><td>3060 × 540 px</td></tr>
+<tr><td>walk</td><td>sidewalk tile + lamps + ginkgos</td><td>100%</td><td>1080 × 150 px (repeats every 360 units)</td></tr>
+<tr><td>road</td><td>asphalt tile</td><td>100%</td><td>1080 × 96 px (repeats every 360 units)</td></tr>
+<tr><td>cars</td><td>7 sprites facing right (index 6 = player)</td><td>–</td><td>102 × 60 px each</td></tr>
+<tr><td>glow, grain</td><td>light sprite; paper texture over everything</td><td>–</td><td>102 × 102 px; any square</td></tr></table>
+<p class="note">Flashing windows, tower glows and the fountain spray are drawn by code at fixed spots. They switch off automatically when you replace the layer they sit on.</p>
+</section>
+
+<section id="tab-p" hidden>
+<h2>Live preview: phone</h2>
+<canvas id="prevp" aria-label="Phone layer preview"></canvas>
+<div class="bar"><label>Camera <input type="range" id="camP" min="0" max="5600" value="0"></label><label><input type="checkbox" id="autoP" checked> Auto-drive</label></div>
+<h2>Layers (bottom of the list is drawn last, in front)</h2>
+<p>On the phone the camera moves down the street. “Zoom” is the parallax: ground is 1.00, and taller things are drawn bigger (1.07 rooftops, 1.12 trees, 1.2 towers), so they drift faster as you scroll.</p>
+<div id="layersP"></div>
+<p><label class="upl">+ Add your own image layer <input id="fileP" type="file" accept="image/*" multiple hidden></label> It is drawn as a vertical strip across the screen that repeats downward. Use speed to make it drift faster or slower than the street.</p>
+<h2>Each phone sprite as its own image</h2>
+<p>Sizes shown are for a 390 px-wide phone (they are drawn at 2 px per unit).</p>
+<div id="galP"></div>
+<h2>Replacing phone sprites with images (IMAGES_PHONE)</h2>
+<table><tr><th>Key</th><th>What it replaces</th><th>Size (390 px phone)</th></tr>
+<tr><td>ground</td><td>street tile: asphalt, sidewalks, center line. Repeats every 360 px</td><td>390 × 360 (export 780 × 720)</td></tr>
+<tr><td>roofs</td><td>rooftop blocks beside the road (mirrored on the right). Give 1 or several</td><td>135 × 150 (export 270 × 300)</td></tr>
+<tr><td>canopy</td><td>ginkgo crowns, 3 sizes</td><td>54, 65, 76 px circles (export ×2)</td></tr>
+<tr><td>fountain</td><td>Fountain Square plaza</td><td>135 × 151</td></tr>
+<tr><td>terminal</td><td>Union Terminal half dome</td><td>135 × 230</td></tr>
+<tr><td>campusL, campusR</td><td>UC lawn and halls; UC rooftop banner</td><td>135 × 250</td></tr>
+<tr><td>clock, tower</td><td>clock-tower roof; Roebling tower top</td><td>44 × 44; 58 × 50</td></tr>
+<tr><td>hub</td><td>1819 Innovation Hub roof (finish line)</td><td>390 × 330</td></tr>
+<tr><td>cars, me</td><td>traffic cars and the player’s car, nose pointing UP</td><td>20 × 36 each (export 40 × 72)</td></tr>
+<tr><td>glow, grain</td><td>lamp light sprite; paper texture</td><td>40 × 40; any square</td></tr></table>
+<p class="note">Always drawn by code: river shimmer, bridge rails and cables, lane dashes, lamps, string lights, fountain spray, blinking rooftop beacons, cloud shadows and the traffic movement. Roadside cards (logo, About, Schedule, Sponsors, map, Register) and their big-view sheets are normal HTML in the page, so you edit them as text.</p>
+</section>
 
 <h2>Make your own layer in code</h2>
 <pre>// 1. an offscreen strip: 2000 units wide, 180 tall (3 pixels per unit)
 var s = mk(2000, 180), c = s.x;
 
 // 2. paint with units. The ground line is y = 138, the road starts at y = 148
-wall(c, 100, 138 - 70, 60, 70, '#b5503a');                     // brick block
-foliage(c, 40, 120, 50, 18, ['#4f8a3a', '#7aa83a'], ['#ffd27a']); // bush + flowers
-tier(c, 300, 138, 24, 60, '#6e3a8c');                           // tower segment
-cap(c, 300, 78, 24, 14, '#6e3a8c');                             // pointed top
+wall(c, 100, 138 - 70, 60, 70, '#1f5f78');                          // blue brick block
+foliage(c, 40, 120, 50, 18, ['#5f8f3a', '#9ab23a'], ['#ffd27a']);   // bush + flowers
+ginkgo(c, 200, 138, 60);                                            // yellow street tree
+tier(c, 300, 138, 24, 60, '#245c74');  cap(c, 300, 78, 24, 14, '#245c74');   // tower + pointed top
 
 // 3. draw the visible slice every frame (f = parallax speed)
 ctx.drawImage(s.c, cam * f * 3, 0, viewW * 3, 540, 0, 0, viewW, 180);</pre>
 
 <h2>Canvas shapes vs. image files</h2>
 <ul>
-<li><b>Loading.</b> Painted-in-code layers need no download but take about a second to paint at startup. Image files need a download first, then decode quickly. Wide full-resolution strips can be a few MB each, so use WebP for skies and PNG/WebP for transparent layers.</li>
-<li><b>Preloading.</b> Yes: create an <code>Image</code>, set <code>src</code>, <code>await img.decode()</code>, then <code>ctx.drawImage(img, …)</code>. Load all layers with <code>Promise.all</code> and show a loading screen until they finish. <code>createImageBitmap(img)</code> makes later draws a bit faster.</li>
-<li><b>Same drawing code.</b> A loaded image drops into the layer list the same way a painted canvas does, because both work with <code>drawImage</code>. That is how the upload button above works.</li>
-<li><b>Published pages.</b> They can’t fetch remote images. Images have to be embedded as <code>data:</code> URLs inside the HTML file (about 33% bigger, 16 MB file limit). If you host the site yourself, normal image files with <code>img.decode()</code> are the better route.</li>
-<li><b>Quality.</b> Images let you paint layers in Procreate, Photoshop or Krita and get real brush texture. Code-made layers are better for tiny files and quick edits.</li>
+<li><b>Loading.</b> Painted-in-code layers need no download but take under a second to paint at startup. Image files need a download first, then decode quickly. Wide full-resolution strips can be a few MB each, so use WebP for skies and PNG or WebP for transparent layers.</li>
+<li><b>Preloading.</b> Yes: create an <code>Image</code>, set <code>src</code>, <code>await img.decode()</code>, then <code>ctx.drawImage(img, …)</code>. Load every layer with <code>Promise.all</code> and show a loading screen until they finish.</li>
+<li><b>Same drawing code.</b> A loaded image works in the layer list exactly like a painted canvas, because both go through <code>drawImage</code>. That is how the upload buttons here, and IMAGES / IMAGES_PHONE in the real page, work.</li>
+<li><b>Published pages</b> can’t fetch remote images. Embed them as <code>data:</code> URLs inside the HTML (about 33% bigger, 16 MB file limit). On your own site, normal image files are the better route.</li>
+<li><b>Quality.</b> Painting layers in Procreate, Photoshop or Krita gives real brush texture. Code-made layers are better for tiny files and quick edits.</li>
 </ul>
 </main>
 <script>
@@ -88,14 +137,46 @@ ctx.drawImage(s.c, cam * f * 3, 0, viewW * 3, 540, 0, 0, viewW, 180);</pre>
    GY = ground line under the buildings, RD = top of the road, WL = total world length. */
 var VH=180,GY=138,RD=148,WL=3800,RS=3;
 var cv=document.getElementById('prev'),g=cv.getContext('2d');
-var W,H,VW,U,DPR,camMax,camS=0,SX,PX,BX,seed=5,FAR=[],MID=[],gaps=[],cars=[],BR={},t=0,pr=0,vel=0,S={},LM={},grain;
+var W,H,VW,U,OFF=0,DPR,camMax,camS=0,SX,PX,BX,AX,seed=5,FAR=[],MID=[],gaps=[],cars=[],BR={},t=0,pr=0,vel=0,S={},LM={},grain;
+
+/* ====================================================================
+   IMAGE SWAP POINTS  (put your own artwork here)
+   --------------------------------------------------------------------
+   Everything on screen is painted by code at startup. To use an image
+   instead, set the matching entry below to a URL. Leave null to keep the
+   painted version. Each image is auto-fitted: it is scaled to the layer's
+   height and repeated sideways, so a wide panorama that tiles works best.
+   (Tiles, sprites and the paper grain are stretched to their exact size.)
+
+   In a published artifact, remote URLs are blocked: use a data: URL
+   ('data:image/png;base64,....'). On your own site, use normal paths
+   such as 'img/far.png'.
+
+   LAYER ORDER (back to front)      parallax   export size (3 px per unit)
+     1  sky       sunset bands, clouds     2%   any width x 540 px
+     2  sun       sun disc + halo          3%   240 x 240 px
+     3  far       far skyline + towers    10%   any width x 540 px
+     4  midfar    Union Terminal          22%   any width x 540 px
+     5  mid       street buildings, Fountain Square, UC, 1819 Hub   55%   any width x 540 px
+     6  bridge    Roebling Bridge        100%   3060 x 540 px (world strip)
+     7  walk      sidewalk + lamps       100%   1080 x 150 px (tile, repeats every 360 units)
+     8  road      asphalt                100%   1080 x 96 px  (tile, repeats every 360 units)
+     9  cars      7 sprites, facing right       102 x 60 px each (index 6 = player's car)
+    10  glow      soft light sprite (lamps, windows)   102 x 102 px
+    11  grain     paper texture over everything   any square, repeats
+   ==================================================================== */
+var IMAGES={sky:null,sun:null,far:null,midfar:null,mid:null,bridge:null,walk:null,road:null,
+            cars:[null,null,null,null,null,null,null],glow:null,grain:null};
+/* Effects that are drawn by code at fixed spots (flashing windows, tower glows, fountain spray).
+   They switch off automatically when you replace the layer they sit on, so they don't float in the wrong place. */
+var FX={windows:true,glow:true,spray:true};
 /* Q = scroll progress (0 to 1) at which each landmark is centered on screen */
-var Q={carew:.08,fifth:.14,gat:.18,pnc:.22,scripps:.26,ws:.30,fs:.12,sch:.24,br:.34,ut:.66,uc:.80,sub:.86};
+var Q={carew:.08,fifth:.14,gat:.18,pnc:.22,scripps:.26,ws:.30,fs:.12,sch:.24,about:.29,br:.34,ut:.66,uc:.80,sub:.86};
 function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
 function hh(a,b){var n=Math.sin(a*12.9898+b*78.233)*43758.5453;return n-Math.floor(n)}
 function mod(a,n){return((a%n)+n)%n}
 function cl(v){return v<0?0:v>255?255:v|0}
-function jit(col,k){var n=parseInt(col.slice(1),16),d=(rnd()-.5)*k;return'rgb('+cl((n>>16)+d)+','+cl((n>>8&255)+d)+','+cl((n&255)+d)+')'}
+function jit(col,k){if(col.charAt(0)!=='#')return col;var n=parseInt(col.slice(1),16),d=(rnd()-.5)*k;return'rgb('+cl((n>>16)+d)+','+cl((n>>8&255)+d)+','+cl((n&255)+d)+')'}
 function dk(col,k){var n=parseInt(col.slice(1),16);return'rgb('+cl((n>>16)-k)+','+cl((n>>8&255)-k)+','+cl((n&255)-k)+')'}
 function mk(w,h){var c=document.createElement('canvas');c.width=Math.ceil(w*RS);c.height=Math.ceil(h*RS);var x=c.getContext('2d');x.scale(RS,RS);return{c:c,x:x}}
 
@@ -105,11 +186,19 @@ function poly(c,x,y,w,h,col,wb,a){var J=function(){return(rnd()-.5)*2*wb},i;c.gl
 function strokes(c,x,y,w,h,col,n,len,a,th){c.globalAlpha=a;for(var i=0;i<n;i++){var l=len*(.5+rnd());c.fillStyle=jit(col,50);c.fillRect(x+rnd()*Math.max(1,w-l),y+rnd()*h,l,th*(.6+rnd()))}c.globalAlpha=1}
 function wall(c,x,y,w,h,col){poly(c,x,y,w,h,col,.7);strokes(c,x,y,w,h,col,w*h/10,9,.35,1.3);strokes(c,x,y,w,h,dk(col,45),w*h/38,5,.3,.7)}
 function leaf(c,x,y,r,col,a){c.save();c.translate(x,y);c.rotate(rnd()*3.14);c.globalAlpha=a;c.fillStyle=col;c.beginPath();c.ellipse(0,0,r,r*.55,0,0,6.283);c.fill();c.restore();c.globalAlpha=1}
-function foliage(c,x,y,w,h,cols,fl){var n=w*h/4|0,i,a,r;
+function foliage(c,x,y,w,h,cols,fl,sp){var n=w*h/4|0,i,a,r;
   for(i=0;i<n;i++){a=rnd()*6.283;r=Math.sqrt(rnd());leaf(c,x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,1.1+rnd()*1.6,jit(cols[rnd()*cols.length|0],44),.93)}
-  for(i=0;i<n/6;i++){a=rnd()*6.283;r=Math.sqrt(rnd());leaf(c,x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,.6+rnd()*.5,'#1c2a24',.55)}
+  for(i=0;i<n/6;i++){a=rnd()*6.283;r=Math.sqrt(rnd());leaf(c,x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,.6+rnd()*.5,(sp||'#1c2a24'),.55)}
   if(fl)for(i=0;i<n/5;i++){a=rnd()*6.283;r=Math.sqrt(rnd());c.fillStyle=fl[rnd()*fl.length|0];c.beginPath();c.arc(x+w/2+Math.cos(a)*r*w/2,y+h/2+Math.sin(a)*r*h/2,.7+rnd()*.5,0,6.283);c.fill()}}
 function circ(c,cx,cy,r,col,a){c.globalAlpha=a;c.fillStyle=col;c.beginPath();for(var i=0;i<18;i++){var an=i/18*6.283,rr=r*(1+(rnd()-.5)*.07);c.lineTo(cx+Math.cos(an)*rr,cy+Math.sin(an)*rr)}c.closePath();c.fill();c.globalAlpha=1}
+
+/* Ginkgo street tree: brown trunk that forks, round canopy of yellow fan-shaped leaves.
+   x = trunk center, base = ground y, h = total height in units. Reuse it in any layer you paint. */
+var GINK=['#f7c531','#ffd84a','#f0a81e','#ffe27a','#e8941a'];
+function ginkgo(c,x,base,h){var w=h*.66;
+  poly(c,x-1.6,base-h*.5,3.2,h*.5,'#5a3a22',.3);
+  c.strokeStyle='#5a3a22';c.lineWidth=1.1;c.beginPath();c.moveTo(x,base-h*.45);c.lineTo(x-w*.28,base-h*.7);c.moveTo(x,base-h*.45);c.lineTo(x+w*.28,base-h*.7);c.stroke();
+  foliage(c,x-w/2,base-h,w,h*.66,GINK,['#fff0b8','#ffe27a'],'#8a5a12')}
 
 /* ========== BUILD: lay out the world (positions only, no drawing) ========== */
 function build(){
@@ -128,198 +217,458 @@ function build(){
   var cfs=Q.fs*camMax*.55+VW*.5,cut=Q.ut*camMax*.55+VW*.5;LM.fs=cfs;
   gaps=[[cfs-80,cfs+80],[.55*(BR.x0-VW)-10,.55*(BR.x0+BR.w)+VW+10],[cut-VW*.58,cut+VW*.58]];   // fountain, bridge, terminal
   var specs=[{c:Q.uc*camMax*.55+VW*.5,w:170,sp:'uc'},{c:camMax*.55+VW*.74,w:176,sp:'hub'}],si=0;
-  var pal=[['#b5503a','#7e2f22'],['#e08a3a','#a85a1f'],['#7a3a78','#4d2049'],['#3a7a58','#214d35'],['#3a4a80','#212a4f'],['#c8643a','#823a20'],['#d9b45a','#a8822f']];
+  var pal=[['#1f5f78','#13404f'],['#2c6e8a','#1b4a5e'],['#1a5267','#0f3342'],['#245a72','#143c4e'],['#1a5267','#0f3342'],['#2a6078','#173f52'],['#1c5870','#103a4a'],['#b5503a','#7e2f22'],['#e08a3a','#a85a1f']];   // mostly logo-teal blues, a couple of warm accents
   MID=[];x=-20;L=camMax*.55+VW+80;
   while(x<L){gaps.forEach(function(gp){if(x>gp[0]-30&&x<gp[1])x=gp[1]});
     if(si<2&&x>=specs[si].c-specs[si].w/2-20){          // UC campus + 1819 Innovation Hub
-      var s=specs[si++],hub=s.sp==='hub',m={x:Math.max(x,s.c-s.w/2),w:s.w,h:hub?108:112,sp:s.sp,c:hub?'#7a96b4':'#9a3a2e',d:hub?'#4a6684':'#5a1f1a',aw:'#fff',bar:false,lit:hub,vine:false,tank:false,ww:hub?26:6,wh:hub?14:8,lr:hub?[s.w/2-17,26,34,26]:null,win:[]};
-      if(hub){for(var ry=18;ry<=62;ry+=22)for(var rx=12;rx<150;rx+=40){var q=rnd();m.win.push(rx,ry,q<.5?1:(q<.7?2:0),rnd()*9|0)}}
+      var s=specs[si++],hub=s.sp==='hub',m={x:Math.max(x,s.c-s.w/2),w:s.w,h:hub?108:112,sp:s.sp,c:hub?'#d8b987':'#9a3a2e',d:hub?'#a88a58':'#5a1f1a',aw:'#fff',bar:false,lit:hub,vine:false,tank:false,ww:hub?32:6,wh:8,lr:hub?[98,30,40,30]:null,win:[]};
+      if(hub){for(var ry=12;ry<=64;ry+=26)for(var rx=6;rx<100;rx+=35){var q=rnd();m.win.push(rx,ry,q<.55?1:(q<.75?2:0),rnd()*9|0)}}
       else{[6,22,38,112,152].forEach(function(dx){[66,78].forEach(function(dy){var q=rnd();m.win.push(dx,dy,q<.5?1:(q<.7?2:0),rnd()*9|0)})})}
       MID.push(m);x=m.x+m.w+4;continue}
-    var w2=38+(rnd()*28|0),h2=46+(rnd()*44|0),c=pal[rnd()*7|0],m2={x:x,w:w2,h:h2,c:c[0],d:c[1],aw:rnd()>.5?'#f0e2c4':'#ff7a8a',bar:rnd()<.12,lit:rnd()<.6,vine:rnd()<.55,tank:rnd()<.25,ww:6,wh:8,lr:[3,17,w2-6,17],win:[]};
+    var w2=38+(rnd()*28|0),h2=46+(rnd()*44|0),c=pal[rnd()*pal.length|0],m2={x:x,w:w2,h:h2,c:c[0],d:c[1],aw:rnd()>.5?'#f0e2c4':'#f2a03a',bar:rnd()<.12,lit:rnd()<.6,vine:rnd()<.55,tank:rnd()<.25,ww:6,wh:8,lr:[3,17,w2-6,17],win:[]};
     for(var wy2=6;wy2<h2-30;wy2+=14)for(var wx2=5;wx2<w2-8;wx2+=11){var r=rnd();m2.win.push(wx2,wy2,r<.45?1:(r<.62?2:0),rnd()*9|0)}
     MID.push(m2);x+=w2+(rnd()*2|0)}
   cars=[];for(i=0;i<7;i++)cars.push({x0:rnd()*400,v:16+rnd()*22,k:i%6,y:i%2?157:161});
   // world x of the three big signs (sponsors hangs over the middle of the bridge)
-  SX=Q.sch*camMax+VW*(.12+.5*Q.sch)+30;PX=BR.x0+510;BX=Q.sub*camMax+VW*(.12+.5*Q.sub)+30}
+  SX=Q.sch*camMax+VW*(.12+.5*Q.sch)+30;PX=BR.x0+510;BX=Q.sub*camMax+VW*(.12+.5*Q.sub)+30;AX=Q.about*camMax+VW*(.12+.5*Q.about)+30}
 
 /* ========== PAINT: pre-render every layer once into offscreen canvases ========== */
-var SKY=['#2b1a5e','#40247a','#5e2a88','#82308a','#a8367f','#cf4373','#ee6358','#ff8a4c','#ffb35c','#ffd27a'];
-function tier(c,cx,y,w,h,col,plain){poly(c,cx-w/2,y-h,w,h,col,.5);strokes(c,cx-w/2,y-h,w,h,col,w*h/9,8,.3,1);strokes(c,cx-w/2,y-h,w,h,'#9a62b8',w*h/50,6,.25,.8);if(!plain)strokes(c,cx-w/2+1,y-h+2,w-2,h-3,'#ffd9a0',w*h/45,1.2,.55,1.2)}
+var SKY=['#1d6275','#35808c','#c98f70','#f2824a','#f27230','#f58334','#f79439','#f9a83e','#fcc454','#ffdf8a'];   // thin teal dusk at the top, then logo orange -> yellow glow
+function tier(c,cx,y,w,h,col,plain){poly(c,cx-w/2,y-h,w,h,col,.5);strokes(c,cx-w/2,y-h,w,h,col,w*h/9,8,.3,1);strokes(c,cx-w/2,y-h,w,h,'#7fb0c0',w*h/50,6,.25,.8);if(!plain)strokes(c,cx-w/2+1,y-h+2,w-2,h-3,'#ffd9a0',w*h/45,1.2,.55,1.2)}
 function cap(c,cx,y,w,h,col){c.fillStyle=col;c.beginPath();c.moveTo(cx-w/2,y);c.lineTo(cx,y-h);c.lineTo(cx+w/2,y);c.fill()}
 function fountain(c,cx){   // Fountain Square: Tyler Davidson fountain ("Genius of Water")
-  poly(c,cx-72,GY-4,144,4,'#b09ab0',.5);strokes(c,cx-72,GY-4,144,4,'#d8c0cc',40,6,.4,.8);
+  poly(c,cx-72,GY-4,144,4,'#d8b898',.5);strokes(c,cx-72,GY-4,144,4,'#d8c0cc',40,6,.4,.8);
   c.fillStyle='#7a8a9a';c.beginPath();c.ellipse(cx,GY-5,34,6,0,0,6.283);c.fill();
   c.fillStyle='#5fb0d0';c.beginPath();c.ellipse(cx,GY-7,30,4,0,0,6.283);c.fill();strokes(c,cx-26,GY-10,52,5,'#bfe8ff',14,5,.5,.8);
   poly(c,cx-10,GY-14,20,8,'#6a7a6a',.3);poly(c,cx-6,GY-42,12,30,'#5f8a70',.4);poly(c,cx-8,GY-44,16,3,'#4f7a60',.3);
   poly(c,cx-3,GY-57,6,14,'#6a9a80',.3);circ(c,cx,GY-60,3,'#6a9a80',1);poly(c,cx-17,GY-54,34,2.4,'#6a9a80',.3);
-  foliage(c,cx-70,GY-36,22,32,['#4f8a3a','#7aa83a','#2f6a3a'],null);foliage(c,cx+48,GY-36,22,32,['#4f8a3a','#7aa83a','#2f6a3a'],null)}
+  ginkgo(c,cx-62,GY,56);ginkgo(c,cx+62,GY,56)}
 function ucBody(c,b){var cx=b.x+b.w/2,i;   // UC campus: brick wings + clock tower
   wall(c,b.x,GY-52,62,52,'#a8452f');wall(c,b.x+b.w-62,GY-52,62,52,'#a8452f');wall(c,cx-14,GY-112,28,112,'#9a3a2e');
   poly(c,b.x-1,GY-54,64,3,b.d,.3);poly(c,b.x+b.w-63,GY-54,64,3,b.d,.3);
   for(i=0;i<4;i++)poly(c,b.x+8+i*13,GY-22,3,22,'#f0e6d4',.3);poly(c,b.x+4,GY-26,52,3,'#f0e6d4',.3);
-  poly(c,cx-8,GY-80,16,12,'#2a1a3a',.3);circ(c,cx,GY-96,6.5,'#f6f1e7',1);
-  c.strokeStyle='#2a1a3a';c.lineWidth=.7;c.beginPath();c.moveTo(cx,GY-96);c.lineTo(cx,GY-100);c.moveTo(cx,GY-96);c.lineTo(cx+3,GY-95);c.stroke();
-  c.fillStyle='#3a2a4a';c.beginPath();c.moveTo(cx-16,GY-112);c.lineTo(cx,GY-136);c.lineTo(cx+16,GY-112);c.fill();
+  poly(c,cx-8,GY-80,16,12,'#0f2b38',.3);circ(c,cx,GY-96,6.5,'#f6f1e7',1);
+  c.strokeStyle='#0f2b38';c.lineWidth=.7;c.beginPath();c.moveTo(cx,GY-96);c.lineTo(cx,GY-100);c.moveTo(cx,GY-96);c.lineTo(cx+3,GY-95);c.stroke();
+  c.fillStyle='#12384a';c.beginPath();c.moveTo(cx-16,GY-112);c.lineTo(cx,GY-136);c.lineTo(cx+16,GY-112);c.fill();
   poly(c,b.x+b.w-46,GY-46,22,18,'#c4202e',.3);c.fillStyle='#fff';c.font='bold 11px Georgia,serif';c.fillText('UC',b.x+b.w-41,GY-33);
   poly(c,b.x-26,GY-5,b.w+52,5,'#5b8a52',.6);
-  foliage(c,b.x-26,GY-38,26,36,['#4f8a3a','#7aa83a','#2f6a3a'],null);foliage(c,b.x+b.w,GY-38,26,36,['#4f8a3a','#7aa83a','#2f6a3a'],['#ffd27a'])}
-function hubBody(c,b){   // 1819 Innovation Hub: glass-and-steel box with a red top band
-  wall(c,b.x,GY-108,b.w,108,b.c);poly(c,b.x-2,GY-122,b.w+4,20,'#c4202e',.4);
-  c.fillStyle='#fff';c.font='bold 16px Arial,sans-serif';c.fillText('1819',b.x+8,GY-105);c.font='bold 9px Arial,sans-serif';c.fillText('INNOVATION HUB',b.x+48,GY-106);
-  poly(c,b.x+b.w/2-18,GY-28,36,28,'#2a3a54',.4);poly(c,b.x+b.w/2-.5,GY-28,1,28,'#8aa0b8',.1);
-  poly(c,b.x-2,GY-3,b.w+4,3,'#9a8a9a',.4);
-  foliage(c,b.x-16,GY-24,20,22,['#4f8a3a','#7aa83a'],['#ff7a8a','#ffd27a']);foliage(c,b.x+b.w-4,GY-24,20,22,['#4f8a3a','#7aa83a'],['#ff7a8a','#ffd27a'])}
+  ginkgo(c,b.x-12,GY,58);ginkgo(c,b.x+b.w+14,GY,58)}
+function hubBody(c,b){   // 1819 Innovation Hub, drawn from the photo: buff-brick wing with ribbon windows + curved glass corner
+  var x=b.x,top=GY-108,i,j;
+  wall(c,x,top,112,108,'#d8b987');strokes(c,x,top,112,108,'#b99a68',60,12,.35,.7);          // buff brick wing
+  for(i=0;i<3;i++)poly(c,x,top+22+i*27,112,2,'#a88a58',.3,.7);                              // floor bands
+  poly(c,x-3,top-2,116,3,'#3a4650',.3);                                                      // roof edge
+  wall(c,x-10,top+30,10,78,'#4a5662');for(i=0;i<8;i++)poly(c,x-9,top+34+i*9,8,1.2,'#2f3a44',.2);   // louvered utility tower
+  poly(c,x+112,top-2,64,110,'#3f7f98',.5);strokes(c,x+112,top-2,64,110,'#8fc4d4',40,8,.35,1.1);    // curved glass corner
+  strokes(c,x+112,top+30,64,70,'#f5a05a',16,10,.28,1.4);                                    // sunset reflected in the glass
+  for(i=0;i<=64;i+=8)poly(c,x+112+i,top-2,1.2,110,'#1f4a5a',.1,.9);                          // mullions
+  for(j=0;j<110;j+=13)poly(c,x+112,top-2+j,64,1,'#1f4a5a',.1,.9);
+  poly(c,x+110,top-2,4,110,'#3a4650',.2);poly(c,x+172,top-2,4,110,'#3a4650',.2);             // steel corner columns
+  poly(c,x,GY-34,b.w,4,'#2c3a44',.3);poly(c,x,GY-30,98,30,'#1b2a34',.4);                      // canopy + dark ground floor
+  poly(c,x+98,GY-30,40,30,'#c9a56a',.3);poly(c,x+117,GY-30,1.2,30,'#2c3a44',.1);             // glass doors, warm light inside
+  poly(c,x+114,GY-60,48,22,'#1b2a34',.3);                                                    // dark panel behind the 1819 mark
+  c.fillStyle='#fff';c.font='bold 17px Arial,sans-serif';c.fillText('1819',x+118,GY-43);
+  c.font='bold 8px Arial,sans-serif';c.fillText('INNOVATION HUB',x+5,GY-20);
+  c.font='bold 4px Arial,sans-serif';c.fillText('WHERE NEXT HAPPENS',x+6,GY-14);
+  poly(c,x+88,GY-46,4,46,'#f3f3ee',.1);poly(c,x+89,GY-42,2,30,'#7aa8b8',.1);                  // white wayfinding post
+  poly(c,x-14,GY-4,b.w+36,4,'#6b8f3a',.5);                                                   // lawn
+  foliage(c,x-16,GY-15,26,13,['#9ab23a','#c8b43c','#6b8f3a'],null);foliage(c,x+140,GY-15,40,13,['#9ab23a','#c8b43c','#6b8f3a'],null);
+  poly(c,x+160,GY-30,3,30,'#1b2a34',.1);poly(c,x+159,GY-30,5,14,'#2f7fd0',.1);              // blue help-phone pole
+  ginkgo(c,x-26,GY,56);ginkgo(c,x+b.w+20,GY,56)}
 
 function paint(){
   seed=77;var i,j,k,c,s;
   // sky: banded gradient with horizontal brush streaks and clouds
+  
+  // ◄ IMAGE SWAP: IMAGES.sky replaces this layer
   s=mk(VW+100,VH);c=s.x;S.sky=s.c;
   for(i=0;i<10;i++)poly(c,-4,i*14-2,VW+108,17,SKY[i],1.4);
   for(i=0;i<9;i++){strokes(c,0,(i+1)*14-3,VW+100,6,SKY[i+1],(VW+100)/3,28,.55,2.2);strokes(c,0,(i+1)*14-4,VW+100,6,SKY[i],(VW+100)/5,24,.4,2)}
-  for(i=0;i<14;i++)poly(c,rnd()*(VW+60),18+rnd()*80,30+rnd()*70,3+rnd()*4,rnd()>.5?'#ff9a8a':'#6a3a8a',2,.3);
+  for(i=0;i<24;i++){var cy2=8+rnd()*104,up=cy2<46;poly(c,rnd()*(VW+40),cy2,40+rnd()*110,1.6+rnd()*3,up?'#6fb0b8':(rnd()>.5?'#ffe9c0':'#e2622a'),1.2,up?.24:.36)}   // long wispy cloud streaks
   // sun and soft glow sprites
+  
+  // ◄ IMAGE SWAP: IMAGES.sun replaces this layer
   s=mk(80,80);c=s.x;S.sun=s.c;circ(c,40,40,37,'#ffd27a',.12);circ(c,40,40,28,'#ffd27a',.18);circ(c,40,40,18,'#fff0b8',1);strokes(c,24,28,32,24,'#ffe9a0',10,10,.4,1.2);
+  
+  // ◄ IMAGE SWAP: IMAGES.glow replaces this layer
   s=mk(34,34);c=s.x;S.glow=s.c;var gr=c.createRadialGradient(17,17,0,17,17,17);gr.addColorStop(0,'rgba(255,214,130,.95)');gr.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=gr;c.fillRect(0,0,34,34);
   // far layer: filler skyline + the named downtown towers
-  s=mk(camMax*.1+VW+60,VH);c=s.x;S.far=s.c;var TC='#6e3a8c';
-  FAR.forEach(function(b){poly(c,b.x,GY-b.h,b.w,b.h,jit('#8f5aa0',24),.9);strokes(c,b.x,GY-b.h,b.w,b.h,'#b57ac0',b.w*b.h/30,6,.22,1)});
+  
+  // ◄ IMAGE SWAP: IMAGES.far replaces this layer
+  s=mk(camMax*.1+VW+60,VH);c=s.x;S.far=s.c;var TC='#245c74';
+  FAR.forEach(function(b){poly(c,b.x,GY-b.h,b.w,b.h,jit('#2f6078',24),.9);strokes(c,b.x,GY-b.h,b.w,b.h,'#9cc3cf',b.w*b.h/30,6,.22,1)});
   tier(c,LM.carew,GY,24,52,TC);tier(c,LM.carew,GY-52,18,20,TC);tier(c,LM.carew,GY-72,12,16,TC);tier(c,LM.carew,GY-88,7,14,TC);tier(c,LM.carew,GY-102,2.4,11,TC);   // Carew Tower (stepped)
-  tier(c,LM.fifth,GY,28,58,'#7a449a');c.fillStyle='#7a449a';c.beginPath();c.moveTo(LM.fifth-14,GY-58);c.lineTo(LM.fifth+14,GY-58);c.lineTo(LM.fifth+14,GY-73);c.fill();   // Fifth Third Center (slanted top)
+  tier(c,LM.fifth,GY,28,58,'#3a7690');c.fillStyle='#3a7690';c.beginPath();c.moveTo(LM.fifth-14,GY-58);c.lineTo(LM.fifth+14,GY-58);c.lineTo(LM.fifth+14,GY-73);c.fill();   // Fifth Third Center (slanted top)
   tier(c,LM.gat,GY,20,84,TC);   // Great American Tower + tiara crown
   [[-9,10],[0,17],[9,10]].forEach(function(sp){c.fillStyle=TC;c.beginPath();c.moveTo(LM.gat+sp[0]-2.4,GY-84);c.lineTo(LM.gat+sp[0],GY-84-sp[1]);c.lineTo(LM.gat+sp[0]+2.4,GY-84);c.fill()});
-  tier(c,LM.pnc,GY,18,74,'#7a449a');cap(c,LM.pnc,GY-74,18,14,'#7a449a');   // PNC Tower (pyramid cap)
+  tier(c,LM.pnc,GY,18,74,'#3a7690');cap(c,LM.pnc,GY-74,18,14,'#3a7690');   // PNC Tower (pyramid cap)
   tier(c,LM.scripps,GY,22,64,TC);tier(c,LM.scripps,GY-64,16,12,TC);cap(c,LM.scripps,GY-76,16,10,TC);   // Scripps Center
-  tier(c,LM.ws,GY,26,82,'#7a449a');tier(c,LM.ws,GY-82,16,10,'#7a449a');tier(c,LM.ws,GY-92,8,8,'#7a449a');tier(c,LM.ws,GY-100,2,8,'#7a449a');   // Western & Southern
-  var hz=c.createLinearGradient(0,GY-110,0,GY);hz.addColorStop(0,'rgba(255,150,120,0)');hz.addColorStop(1,'rgba(255,150,120,.4)');c.fillStyle=hz;c.fillRect(0,0,camMax*.1+VW+60,VH);
+  tier(c,LM.ws,GY,26,82,'#3a7690');tier(c,LM.ws,GY-82,16,10,'#3a7690');tier(c,LM.ws,GY-92,8,8,'#3a7690');tier(c,LM.ws,GY-100,2,8,'#3a7690');   // Western & Southern
+  var hz=c.createLinearGradient(0,GY-110,0,GY);hz.addColorStop(0,'rgba(255,190,100,0)');hz.addColorStop(1,'rgba(255,190,100,.36)');c.fillStyle=hz;c.fillRect(0,0,camMax*.1+VW+60,VH);
   // Union Terminal (half dome) on the mid-far layer
+  
+  // ◄ IMAGE SWAP: IMAGES.midfar replaces this layer
   s=mk(camMax*.22+VW+60,VH);c=s.x;S.b=s.c;
-  var ux=LM.ut;poly(c,ux-47,GY-16,94,16,'#7a4488',.5);poly(c,ux-31,GY-24,62,9,'#7a4488',.4);
-  for(i=30;i>=20;i-=2){c.fillStyle=i%4?'#8a5498':'#7a4488';c.beginPath();c.arc(ux,GY-24,i,Math.PI,0);c.closePath();c.fill()}
-  c.fillStyle='#2a1548';c.beginPath();c.arc(ux,GY-24,19,Math.PI,0);c.closePath();c.fill();strokes(c,ux-30,GY-50,60,26,'#a870b8',30,8,.25,.9);
+  var ux=LM.ut;poly(c,ux-47,GY-16,94,16,'#2f6a80',.5);poly(c,ux-31,GY-24,62,9,'#2f6a80',.4);
+  for(i=30;i>=20;i-=2){c.fillStyle=i%4?'#3a7690':'#2f6a80';c.beginPath();c.arc(ux,GY-24,i,Math.PI,0);c.closePath();c.fill()}
+  c.fillStyle='#103846';c.beginPath();c.arc(ux,GY-24,19,Math.PI,0);c.closePath();c.fill();strokes(c,ux-30,GY-50,60,26,'#7fb0c0',30,8,.25,.9);
   c.fillStyle=hz;c.fillRect(0,0,camMax*.22+VW+60,VH);
   // mid layer: street buildings, Fountain Square, campus lawn, UC, 1819 Hub
+  
+  // ◄ IMAGE SWAP: IMAGES.mid replaces this layer
   s=mk(camMax*.55+VW+80,VH);c=s.x;S.mid=s.c;
   fountain(c,LM.fs);
-  poly(c,gaps[2][0],GY-6,gaps[2][1]-gaps[2][0],6,'#5b8a52',.7);for(i=0;i<8;i++)foliage(c,gaps[2][0]+rnd()*(gaps[2][1]-gaps[2][0]-16),GY-12,16,12,['#4f8a3a','#7aa83a','#2f6a3a'],['#ff7a8a','#ffd27a']);
-  MID.forEach(function(b){var top=GY-b.h;
+  poly(c,gaps[2][0],GY-6,gaps[2][1]-gaps[2][0],6,'#5b8a52',.7);for(i=0;i<8;i++)foliage(c,gaps[2][0]+rnd()*(gaps[2][1]-gaps[2][0]-16),GY-12,16,12,['#5f8f3a','#9ab23a','#3f6f3a'],['#ffb347','#fff0b8']);
+  var trees=[];
+  MID.forEach(function(b){var top=GY-b.h;if(!b.sp&&rnd()<.38)trees.push(b.x+b.w+rnd()*4-2,50+rnd()*18);
     if(b.sp==='uc')ucBody(c,b);else if(b.sp==='hub')hubBody(c,b);
     else{wall(c,b.x,top,b.w,b.h,b.c);poly(c,b.x-1,top-1,b.w+2,3,b.d,.4);
       if(b.tank){poly(c,b.x+b.w*.3,top-9,9,9,b.d,.5);poly(c,b.x+b.w*.3-1,top-11,11,3,'#5a3a2a',.4)}}
     for(k=0;k<b.win.length;k+=4){var wx=b.x+b.win[k],wy=top+b.win[k+1];   // painted window + highlight
-      poly(c,wx-1.2,wy-1.2,b.ww+2.4,b.wh+2.4,'#2a1a3a',.35);poly(c,wx,wy,b.ww,b.wh,'#34527e',.25);
+      poly(c,wx-1.2,wy-1.2,b.ww+2.4,b.wh+2.4,'#0f2b38',.35);poly(c,wx,wy,b.ww,b.wh,'#2f6f8a',.25);
       c.globalAlpha=.5;c.strokeStyle='#cfe8ff';c.lineWidth=.7;c.beginPath();c.moveTo(wx+1,wy+b.wh-1);c.lineTo(wx+b.ww*.65,wy+1);c.stroke();c.globalAlpha=1;poly(c,wx-1.5,wy+b.wh+1,b.ww+3,1.5,'#f0e2c4',.3)}
     if(!b.sp){   // vines + shopfront (awning, glass, door, planter)
-      if(b.vine)foliage(c,b.x+rnd()*(b.w-14),top+6+rnd()*10,12+rnd()*8,b.h*.45,['#4f8a3a','#7aa83a','#2f6a3a'],null);
+      if(b.vine)foliage(c,b.x+rnd()*(b.w-14),top+6+rnd()*10,12+rnd()*8,b.h*.45,['#5f8f3a','#9ab23a','#3f6f3a'],null);
       poly(c,b.x,GY-23,b.w,23,dk(b.c,30),.5);
-      for(j=0;j<b.w;j+=4)poly(c,b.x+j,GY-23,4,5,(j/4|0)%2?b.aw:'#3a2250',.35);
-      poly(c,b.x+3,GY-17,b.w-6,17,'#243a52',.4);strokes(c,b.x+3,GY-17,b.w-6,17,'#5a8ab0',6,6,.3,1);
+      for(j=0;j<b.w;j+=4)poly(c,b.x+j,GY-23,4,5,(j/4|0)%2?b.aw:'#0f3342',.35);
+      poly(c,b.x+3,GY-17,b.w-6,17,'#16394a',.4);strokes(c,b.x+3,GY-17,b.w-6,17,'#5a8ab0',6,6,.3,1);
       poly(c,b.x+b.w/2-3,GY-14,6,14,'#6a3a2a',.3);
-      foliage(c,b.x+b.w-12,GY-10,10,10,['#3f8a3a','#7aa83a'],['#ff5a5a','#ffd27a'])}
-    c.strokeStyle='rgba(26,15,46,.55)';c.lineWidth=.7;c.strokeRect(b.x,top,b.w,b.h)});
+      foliage(c,b.x+b.w-12,GY-10,10,10,['#5f8f3a','#c8b43c'],['#ffb347','#ffd27a'])}
+    if(!b.sp){c.strokeStyle='rgba(11,36,48,.55)';c.lineWidth=.7;c.strokeRect(b.x,top,b.w,b.h)}});
+  for(i=0;i<trees.length;i+=2)ginkgo(c,trees[i],GY,trees[i+1]);
   // Roebling Bridge: stone towers, blue suspension cables, railing and river (full-speed strip)
+  
+  // ◄ IMAGE SWAP: IMAGES.bridge replaces this layer
   s=mk(BR.w,VH);c=s.x;S.br=s.c;var cy,u,xx;
-  poly(c,0,112,BR.w,36,'#46347a',.8);strokes(c,0,112,BR.w,36,'#7a5ab0',BR.w*.9,8,.3,1);strokes(c,0,112,BR.w,36,'#ff9a6a',BR.w*.2,6,.3,.9);strokes(c,0,112,BR.w,8,'#ffd27a',BR.w*.1,10,.25,.8);
-  [BR.t1,BR.t2].forEach(function(tx){tier(c,tx,148,32,124,'#9a7890',true);
-    c.fillStyle='#2a1a3a';c.beginPath();c.moveTo(tx-8,148);c.lineTo(tx-8,112);c.quadraticCurveTo(tx-8,100,tx,92);c.quadraticCurveTo(tx+8,100,tx+8,112);c.lineTo(tx+8,148);c.fill();
+  poly(c,0,112,BR.w,36,'#1f5f78',.8);strokes(c,0,112,BR.w,36,'#5fa0b8',BR.w*.9,8,.3,1);strokes(c,0,112,BR.w,36,'#ff9a6a',BR.w*.2,6,.3,.9);strokes(c,0,112,BR.w,8,'#ffd27a',BR.w*.1,10,.25,.8);
+  [BR.t1,BR.t2].forEach(function(tx){tier(c,tx,148,32,124,'#b98f6a',true);
+    c.fillStyle='#0f2b38';c.beginPath();c.moveTo(tx-8,148);c.lineTo(tx-8,112);c.quadraticCurveTo(tx-8,100,tx,92);c.quadraticCurveTo(tx+8,100,tx+8,112);c.lineTo(tx+8,148);c.fill();
     [66,46].forEach(function(ay){c.beginPath();c.moveTo(tx-3,ay+10);c.lineTo(tx-3,ay+3);c.quadraticCurveTo(tx-3,ay-2,tx,ay-4);c.quadraticCurveTo(tx+3,ay-2,tx+3,ay+3);c.lineTo(tx+3,ay+10);c.fill()});
-    poly(c,tx-18,22,36,4,'#7a5870',.3)});
-  poly(c,0,138,BR.w,3,'#3f6fd0',.3);poly(c,0,141,BR.w,8,'#6a4a78',.5);poly(c,0,133,BR.w,1.8,'#3f6fd0',.3);
-  for(xx=0;xx<BR.w;xx+=8)poly(c,xx,134,1.6,8,'#3b2a5c',.2);
+    poly(c,tx-18,22,36,4,'#8a6a4a',.3)});
+  poly(c,0,138,BR.w,3,'#3f6fd0',.3);poly(c,0,141,BR.w,8,'#1b5367',.5);poly(c,0,133,BR.w,1.8,'#3f6fd0',.3);
+  for(xx=0;xx<BR.w;xx+=8)poly(c,xx,134,1.6,8,'#0f3342',.2);
   c.strokeStyle='#3f6fd0';c.lineWidth=1.8;c.beginPath();c.moveTo(0,138);c.lineTo(BR.t1,30);c.moveTo(BR.t2,30);c.lineTo(BR.w,138);c.stroke();
   c.beginPath();c.moveTo(BR.t1,30);c.quadraticCurveTo((BR.t1+BR.t2)/2,186,BR.t2,30);c.stroke();   // main cable, sags to y=108
   c.strokeStyle='rgba(63,111,208,.85)';c.lineWidth=.5;
   for(xx=BR.t1+8;xx<BR.t2;xx+=7){u=(xx-BR.t1)/(BR.t2-BR.t1);cy=30*(1-u)*(1-u)+372*u*(1-u)+30*u*u;c.beginPath();c.moveTo(xx,cy);c.lineTo(xx,138);c.stroke()}
   for(xx=10;xx<BR.t1-6;xx+=12){cy=138-108*xx/BR.t1;c.beginPath();c.moveTo(xx,cy);c.lineTo(xx,138);c.stroke();c.beginPath();c.moveTo(BR.w-xx,cy);c.lineTo(BR.w-xx,138);c.stroke()}
   // sidewalk tile (lamps + planters) and road tile, both repeat every 360 units
+  
+  // ◄ IMAGE SWAP: IMAGES.walk replaces this layer
   s=mk(360,RD-(GY-40));c=s.x;S.walk=s.c;
-  poly(c,-2,40,364,10,'#b88aa8',.5);
-  for(i=-14;i<364;i+=14){poly(c,i,41,13,5.2,jit('#c8a2bc',34),.9,.8);poly(c,i+7,46.5,13,3.4,jit('#a87a9c',34),.9,.8)}
-  poly(c,-2,48,364,2.2,'#6a4a78',.4);
-  [18,92,150,236,296,346].forEach(function(px){var w=22+rnd()*8,h=12+rnd()*6;foliage(c,px-w/2,40-h*.8,w,h,['#3f8a3a','#7aa83a','#2f6a3a','#a8c040'],['#ffd27a','#ff5a5a','#ff9a3a','#fff0b8'])});
-  [60,180,300].forEach(function(lx){poly(c,lx-1,8,2.4,32,'#2a1a3a',.2);poly(c,lx-1,7,9,2.2,'#2a1a3a',.2);poly(c,lx+5,8,5,2.6,'#2a1a3a',.2)});
+  poly(c,-2,40,364,10,'#d4a27c',.5);
+  for(i=-14;i<364;i+=14){poly(c,i,41,13,5.2,jit('#e0b992',34),.9,.8);poly(c,i+7,46.5,13,3.4,jit('#c08f6a',34),.9,.8)}
+  poly(c,-2,48,364,2.2,'#1b5367',.4);
+  [18,92,150,236,296,346].forEach(function(px){var w=22+rnd()*8,h=12+rnd()*6;foliage(c,px-w/2,40-h*.8,w,h,['#6b8f3a','#9ab23a','#4a7a3a','#c8b43c'],['#ffd27a','#ffb347','#ff9a3a','#fff0b8'])});
+  ginkgo(c,122,41,40);ginkgo(c,262,41,40);strokes(c,0,41,360,9,'#f7c531',70,2.6,.55,.9);   // street ginkgos + fallen leaves
+  [60,180,300].forEach(function(lx){poly(c,lx-1,8,2.4,32,'#0f2b38',.2);poly(c,lx-1,7,9,2.2,'#0f2b38',.2);poly(c,lx+5,8,5,2.6,'#0f2b38',.2)});
+  
+  // ◄ IMAGE SWAP: IMAGES.road replaces this layer
   s=mk(360,VH-RD);c=s.x;S.road=s.c;
-  poly(c,-2,0,364,32,'#33264a',.6);strokes(c,0,0,360,32,'#4a3866',200,12,.28,1.4);strokes(c,0,0,360,32,'#1a1030',160,10,.3,1.2);
-  poly(c,-2,13.6,364,.9,'#e8b84a',.25);poly(c,-2,15.6,364,.9,'#e8b84a',.25);poly(c,-2,0,364,1.8,'#1a1030',.3,.6);
-  // car sprites (6 traffic colors + the red player car)
-  S.car=['#2f7fd0','#e8b84a','#3aa56a','#d04fa0','#e8e0d0','#ff7a3d','#c4202e'].map(function(col){
+  poly(c,-2,0,364,32,'#1f4458',.6);strokes(c,0,0,360,32,'#33647c',200,12,.28,1.4);strokes(c,0,0,360,32,'#0d2230',160,10,.3,1.2);
+  poly(c,-2,13.6,364,.9,'#f7b538',.25);poly(c,-2,15.6,364,.9,'#f7b538',.25);poly(c,-2,0,364,1.8,'#0d2230',.3,.6);
+  // car sprites (6 traffic colors + the red player car)   ◄ IMAGE SWAP: IMAGES.cars[0..6] (6 = player)
+  S.car=['#2f7fd0','#f7b538','#3aa56a','#4aa3c0','#e8e0d0','#9fd0e0','#f27230'].map(function(col){
     var cs=mk(34,20),q=cs.x;poly(q,2,8.5,31,6.5,col,.5);poly(q,9,2.5,16,7,col,.5);
     poly(q,10.5,3.8,6,4.6,'#bfe3ff',.3,.85);poly(q,17.5,3.8,6,4.6,'#bfe3ff',.3,.85);
     strokes(q,2,8.5,31,6.5,col,16,6,.4,1);poly(q,2,12.7,31,1.6,'#000',.3,.25);
     poly(q,31,9.5,3,2.2,'#fff0b8',.3);poly(q,1,9.5,1.6,2.2,'#ff4a4a',.2);
-    q.strokeStyle='rgba(26,15,46,.65)';q.lineWidth=.6;q.strokeRect(2,8.5,31,6.5);q.strokeRect(9,2.5,16,7);return cs.c});
+    q.strokeStyle='rgba(11,36,48,.65)';q.lineWidth=.6;q.strokeRect(2,8.5,31,6.5);q.strokeRect(9,2.5,16,7);return cs.c});
   // paper grain overlay
   var gc=document.createElement('canvas');gc.width=gc.height=180;var gx=gc.getContext('2d');
-  for(i=0;i<2600;i++){gx.globalAlpha=.25+rnd()*.35;gx.fillStyle=rnd()>.5?'#fff3e2':'#2a1a3a';var z=1+rnd()*1.6;gx.fillRect(rnd()*180,rnd()*180,z,z)}
-  grain=g.createPattern(gc,'repeat')}
+  for(i=0;i<2600;i++){gx.globalAlpha=.25+rnd()*.35;gx.fillStyle=rnd()>.5?'#fff3e2':'#0f2b38';var z=1+rnd()*1.6;gx.fillRect(rnd()*180,rnd()*180,z,z)}
+  grain=g.createPattern(gc,'repeat')}   // ◄ IMAGE SWAP: IMAGES.grain replaces the paper texture (see applyImages)
 
 
-/* ========== LAYER LAB (everything above is the same painting code as the main page) ========== */
+/* ========== IMAGE LOADING: swaps painted layers for your images (see IMAGES at the top) ========== */
+var IMG={};   // cache of loaded images, so a window resize doesn't reload them
+function loadImg(src){return new Promise(function(ok,no){var im=new Image();im.onload=function(){ok(im)};im.onerror=no;im.src=src})}
+/* Draw an image onto a fresh layer canvas of w x h units. 'tile' repeats it sideways at full height; 'stretch' fills exactly. */
+function fitImg(im,w,h,stretch){var s=mk(w,h);
+  if(stretch)s.x.drawImage(im,0,0,w,h);
+  else{var iw=Math.max(1,im.width*h/im.height);for(var x=0;x<w;x+=iw)s.x.drawImage(im,x,0,iw,h)}
+  return s.c}
+function applyImages(){
+  var slots={   // key: [where it goes, width in units, height in units, stretch?]
+    sky:['sky',VW+100,VH],sun:['sun',80,80,1],far:['far',camMax*.1+VW+60,VH],midfar:['b',camMax*.22+VW+60,VH],
+    mid:['mid',camMax*.55+VW+80,VH],bridge:['br',BR.w,VH],walk:['walk',360,RD-(GY-40),1],road:['road',360,VH-RD,1],glow:['glow',34,34,1]};
+  Object.keys(slots).forEach(function(k){var src=IMAGES[k];if(!src)return;var d=slots[k];
+    (IMG[k]?Promise.resolve(IMG[k]):loadImg(src).then(function(im){return IMG[k]=im})).then(function(im){
+      S[d[0]]=fitImg(im,d[1],d[2],d[3]);
+      if(k==='mid')FX.windows=FX.spray=false;      // painted windows/fountain no longer exist
+      if(k==='far'||k==='midfar')FX.glow=false}).catch(function(){})});
+  IMAGES.cars.forEach(function(src,i){if(!src)return;(IMG['car'+i]?Promise.resolve(IMG['car'+i]):loadImg(src).then(function(im){return IMG['car'+i]=im})).then(function(im){S.car[i]=fitImg(im,34,20,1)}).catch(function(){})});
+  if(IMAGES.grain)loadImg(IMAGES.grain).then(function(im){grain=g.createPattern(im,'repeat')}).catch(function(){});
+}
+
+
+/* ====================================================================
+   PHONE MODE: TOP-DOWN STREET (screens narrower than 700px)
+   The page scroll IS the camera (cam = scrollY), so the street moves exactly with your finger.
+   The car drives down the screen. Roadside cards rise from below; tap one for a big readable view.
+   Parallax: ground = 1x, rooftops are drawn slightly bigger (1.07x), towers and tree crowns bigger still,
+   so tall things drift faster than the street. Same palette, ginkgos and landmarks as the desktop drive.
+   ==================================================================== */
+var TD={nav:{start:0,enter:0}},td={img:{}},tdR=[],tdT=[],tdCars=[],tdLM=[],tdCardEls=[],TDV=8;
+var WLtd=5600;                                                          // length of the street in px (= scroll distance)
+var BRG={a:1750,b:2950,t1:1860,t2:2840,ban:2300},FSY=520,UTY=3330,UCY=3860;   // world y of each stop: bridge, fountain, terminal, UC
+var roofPal=[['#1f5f78','#13404f'],['#2c6e8a','#1b4a5e'],['#1a5267','#0f3342'],['#245a72','#143c4e'],['#2a6078','#173f52'],['#1c5870','#103a4a'],['#b5503a','#7e2f22'],['#e08a3a','#a85a1f']];
+var TDWHERE=[[0,'Downtown Cincinnati'],[430,'Fountain Square'],[880,'About us'],[1250,'Schedule'],[1700,'Roebling Suspension Bridge'],[2250,'Our sponsors'],[3050,'Union Terminal'],[3650,'University of Cincinnati'],[4200,'Explore Rev UC'],[4800,'1819 Innovation Hub']];
+function tdMk(w,h){var c=document.createElement('canvas');c.width=Math.ceil(w*2);c.height=Math.ceil(h*2);var x=c.getContext('2d');x.scale(2,2);return{c:c,x:x}}
+
+/* ====================================================================
+   IMAGE SWAP POINTS FOR PHONE MODE  (put your own artwork here)
+   --------------------------------------------------------------------
+   Same idea as IMAGES at the top of this file: set an entry to a URL ('data:image/png;base64,...' in a
+   published artifact, or a normal path on your own site) and it replaces the painted version. Leave null to keep it.
+   Lists (roofs, canopy, cars) cycle: give 1 image to use it everywhere, or give several for variety.
+   Images are stretched to the exact size below, so export at 2 px per unit. Sizes shown are for a 390px-wide phone;
+   "side" = the width of the building strip beside the road (about 135 at 390px wide, see the Layer Lab for live numbers).
+
+     ground    street tile: asphalt, sidewalks, curbs, center line. Repeats every 360 px     390 x 360   (export 780 x 720)
+     roofs     rooftop blocks beside the road, drawn on the left and mirrored on the right    side x 150 (export 270 x 300)
+     canopy    ginkgo tree crowns, 3 sizes: 54, 65 and 76 px circles                          (export 108, 130, 152 px)
+     fountain  Fountain Square plaza, seen from above                                         side x side+16
+     terminal  Union Terminal half dome                                                        side x 230
+     campusL   UC lawn + brick halls (left)                                                    side x 250
+     campusR   UC brick roofs with the UC banner (right)                                       side x 250
+     clock     clock-tower pyramid roof (drawn bigger, so it drifts faster)                    44 x 44
+     tower     Roebling stone tower top (drawn bigger, drifts faster)                          58 x 50
+     hub       1819 Innovation Hub roof, the finish line                                       390 x 330
+     cars      6 traffic cars seen from above, nose UP (rotated for the player)                20 x 36
+     me        the player's car, nose UP                                                        20 x 36
+     glow      soft light sprite (lamps)                                                        40 x 40
+     grain     paper texture over everything (repeats)
+
+   Always drawn by code, so not replaceable: river shimmer, bridge rails + cables, lane dashes, lamps, string lights,
+   fountain spray, blinking beacons, cloud shadows, oncoming traffic movement.
+   ==================================================================== */
+var IMAGES_PHONE={ground:null,roofs:[],canopy:[],fountain:null,terminal:null,campusL:null,campusR:null,clock:null,tower:null,hub:null,cars:[],me:null,glow:null,grain:null};
+
+/* ---------- sprites (painted once with the same brush helpers) ---------- */
+function tdCanopy(c,x,y,d){circ(c,x+3,y+4,d/2,'#0b2430',.28);foliage(c,x-d/2,y-d/2,d,d,GINK,['#fff0b8','#ffe27a'],'#8a5a12')}   // yellow ginkgo crown seen from above
+function tdRoof(i){var w=td.side,h=150,s=tdMk(w,h),c=s.x,col=roofPal[i%roofPal.length],j,n,t,px,py;   // generic city rooftop
+  poly(c,0,0,w,h,'#0b2430',.3,.35);poly(c,1,1,w-3,h-4,col[0],1);strokes(c,1,1,w-3,h-4,col[0],w*h/14,12,.35,1.4);strokes(c,1,1,w-3,h-4,col[1],w*h/45,7,.3,1);
+  poly(c,1,1,w-3,3,col[1],.4);poly(c,1,h-5,w-3,3,col[1],.4);poly(c,1,1,3,h-4,col[1],.4);poly(c,w-5,1,3,h-4,col[1],.4);          // parapet
+  n=2+(rnd()*3|0);for(j=0;j<n;j++){t=rnd();px=10+rnd()*Math.max(4,w-44);py=10+rnd()*(h-40);
+    if(t<.4){poly(c,px,py,20,16,'#9fb4be',.3);circ(c,px+10,py+8,5.5,'#33505e',1);circ(c,px+10,py+8,3,'#6a8794',1)}              // AC unit
+    else if(t<.65){circ(c,px+9,py+9,9,'#b5503a',1);circ(c,px+9,py+9,6,'#d9764a',1)}                                              // water tank
+    else if(t<.85){poly(c,px,py,22,14,'#8fd0e0',.3,.9);c.strokeStyle='#0f2b38';c.lineWidth=.6;c.beginPath();c.moveTo(px,py);c.lineTo(px+22,py+14);c.moveTo(px+22,py);c.lineTo(px,py+14);c.stroke()}   // skylight
+    else foliage(c,px,py,22,18,GINK,['#fff0b8'],'#8a5a12')}                                                                       // roof garden
+  return s.c}
+function tdCarSpr(col){var s=tdMk(20,36),c=s.x;poly(c,1,2,18,32,'#0b2430',.3,.35);poly(c,2,1,16,32,col,.8);strokes(c,2,1,16,32,col,10,8,.35,1);
+  poly(c,4,8,12,9,'#bfe3ff',.3,.9);poly(c,4,22,12,6,'#bfe3ff',.3,.8);poly(c,5,17,10,5,dk(col,25),.3);
+  poly(c,3,2,4,2.4,'#fff0b8',.2);poly(c,13,2,4,2.4,'#fff0b8',.2);poly(c,3,32,4,2,'#ff4a4a',.2);poly(c,13,32,4,2,'#ff4a4a',.2);   // headlights (top) + tail lights
+  c.strokeStyle='rgba(11,36,48,.6)';c.lineWidth=.7;c.strokeRect(2,1,16,32);return s.c}
+function tdFountain(w,h){var s=tdMk(w,h),c=s.x,cx=w/2,cy=h/2,r=Math.min(w,h)*.34;   // Fountain Square from above
+  poly(c,0,0,w,h,'#d8b898',.6);strokes(c,0,0,w,h,'#e8c8a8',w*h/30,10,.4,1.2);strokes(c,0,0,w,h,'#b89870',w*h/60,8,.3,.8);
+  circ(c,cx,cy,r+6,'#a88860',1);circ(c,cx,cy,r+3,'#6a8a9a',1);circ(c,cx,cy,r,'#4fa0b8',1);
+  c.save();c.beginPath();c.arc(cx,cy,r,0,6.283);c.clip();strokes(c,cx-r,cy-r,2*r,2*r,'#bfe8ff',50,6,.4,.9);c.restore();
+  circ(c,cx,cy,r*.34,'#7a8a9a',1);circ(c,cx,cy,r*.2,'#5f8a70',1);poly(c,cx-r*.5,cy-1.6,r,3.2,'#5f8a70',.3);poly(c,cx-1.6,cy-r*.5,3.2,r,'#5f8a70',.3);   // statue + outstretched arms
+  tdCanopy(c,12,14,34);tdCanopy(c,w-12,h-14,36);return s.c}
+function tdTerminal(w,h){var s=tdMk(w,h),c=s.x,R=Math.min(w-20,88),cx0=w-R-6,cy=h/2,i,a;   // Union Terminal: half dome facing the street
+  poly(c,0,0,w,h,'#c8a888',.6);strokes(c,0,0,w,h,'#e0c4a0',w*h/40,10,.4,1.2);
+  wall(c,0,cy-62,cx0+8,124,'#3d7a8f');poly(c,0,cy-62,cx0+8,6,'#2f6a80',.3);poly(c,0,cy+56,cx0+8,6,'#2f6a80',.3);
+  for(i=R;i>=R*.45;i-=R*.11){c.fillStyle=((i/R*10)|0)%2?'#4a8aa0':'#3d7a8f';c.beginPath();c.arc(cx0,cy,i,-Math.PI/2,Math.PI/2);c.closePath();c.fill()}
+  c.strokeStyle='rgba(143,196,212,.7)';c.lineWidth=.8;for(i=0;i<7;i++){a=-Math.PI/2+i*Math.PI/6;c.beginPath();c.moveTo(cx0,cy);c.lineTo(cx0+Math.cos(a)*R,cy+Math.sin(a)*R);c.stroke()}
+  circ(c,cx0,cy,R*.16,'#f7c531',1);tdCanopy(c,14,h-16,34);return s.c}
+function tdCampus(w,h,right){var s=tdMk(w,h),c=s.x;   // UC: lawn, brick halls, paths (right side also has the UC roof banner)
+  poly(c,0,0,w,h,'#6b8f3a',.6);strokes(c,0,0,w,h,'#9ab23a',w*h/20,9,.4,1.3);strokes(c,0,0,w,h,'#4a7a3a',w*h/50,7,.3,1);
+  poly(c,w*.45,0,6,h,'#e8d9b0',.5);poly(c,0,h*.5,w,6,'#e8d9b0',.5);
+  wall(c,6,10,w*.5,46,'#a8452f');wall(c,6,h-62,w*.5,50,'#a8452f');poly(c,10,14,w*.5-8,6,'#8a3a26',.3);
+  if(right){poly(c,w*.55,h*.3,w*.4,28,'#c4202e',.3);c.fillStyle='#fff';c.font='bold 24px Georgia,serif';c.fillText('UC',w*.55+10,h*.3+23)}
+  tdCanopy(c,w*.8,h*.2,38);tdCanopy(c,w*.25,h*.5,40);tdCanopy(c,w*.82,h*.85,36);return s.c}
+function tdClockRoof(){var s=tdMk(44,44),c=s.x,cols=['#2f6a80','#12384a','#0b2430','#245c74'],pts=[[2,2,42,2],[42,2,42,42],[42,42,2,42],[2,42,2,2]];   // clock tower pyramid roof
+  poly(c,0,0,44,44,'#0b2430',.4,.4);pts.forEach(function(p,i){c.fillStyle=cols[i];c.beginPath();c.moveTo(22,22);c.lineTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.closePath();c.fill()});circ(c,22,22,2.4,'#f7c531',1);return s.c}
+function tdTower(){var s=tdMk(58,50),c=s.x;poly(c,0,0,58,50,'#0b2430',.3,.35);wall(c,1,1,54,46,'#b98f6a');poly(c,8,8,38,30,'#8a6a4a',.4);circ(c,27,23,4,'#3f6fd0',1);return s.c}   // Roebling stone tower top
+function tdHub(w,h){var s=tdMk(w,h),c=s.x,x=w*.6,i;   // 1819 Innovation Hub roof: buff-brick wing, glass corner, big lettering
+  poly(c,0,0,w,40,'#d4a27c',.5);strokes(c,0,0,w,40,'#e0b992',w*2,10,.4,1.2);                                   // entry plaza
+  wall(c,0,40,x,h-40,'#d8b987');strokes(c,0,40,x,h-40,'#b99a68',w*3,14,.3,.8);                                // buff-brick roof
+  poly(c,x,40,w-x,h-40,'#3f7f98',.6);strokes(c,x,40,w-x,h-40,'#8fc4d4',90,10,.35,1.2);strokes(c,x,60,w-x,h-80,'#f5a05a',26,12,.3,1.6);   // glass roof, sunset reflected
+  for(i=x;i<w;i+=12)poly(c,i,40,1.2,h-40,'#1f4a5a',.1,.9);for(i=40;i<h;i+=14)poly(c,x,i,w-x,1,'#1f4a5a',.1,.9);
+  poly(c,0,26,w,16,'#2c3a44',.3);poly(c,w/2-26,26,52,16,'#c9a56a',.3);poly(c,w/2-.5,26,1,16,'#2c3a44',.1);       // dark canopy + glowing doors facing the street
+  poly(c,w*.06,h*.34,w*.5,h*.34,'#1b2a34',.5);c.fillStyle='#fff';c.textAlign='center';
+  c.font='bold '+Math.round(Math.min(70,w*.17))+'px Arial,sans-serif';c.fillText('1819',w*.31,h*.34+Math.min(64,w*.16));
+  c.font='bold '+Math.round(Math.min(20,w*.05))+'px Arial,sans-serif';c.fillText('INNOVATION HUB',w*.31,h*.34+Math.min(64,w*.16)+Math.min(26,w*.065));
+  c.font='bold 9px Arial,sans-serif';c.fillText('WHERE NEXT HAPPENS',w*.31,h*.34+Math.min(64,w*.16)+Math.min(44,w*.11));c.textAlign='left';
+  for(i=0;i<3;i++){var a=poly;a(c,w*.08+i*30,h-52,20,16,'#9fb4be',.3);circ(c,w*.08+i*30+10,h-44,5.5,'#33505e',1)}   // rooftop units
+  tdCanopy(c,w*.1,22,40);tdCanopy(c,w*.9,22,40);return s.c}
+
+/* ---------- layout, world and painting ---------- */
+function tdLayout(){W=innerWidth;H=stage.clientHeight||innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+  td.RW=Math.round(Math.min(92,W*.24));td.rl=Math.round((W-td.RW)/2);td.rr=td.rl+td.RW;td.SW=18;td.side=td.rl-td.SW;td.cw=Math.min(160,td.side+20);
+  td.cx=W/2;td.HUBY=WLtd+H*.44+90;track.style.height=(WLtd+H)+'px';
+  cv.style.top='0';cv.style.height='100%';cv.style.bottom='auto';cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);g.setTransform(DPR,0,0,DPR,0,0)}
+function tdBuild(){seed=31;tdR=[];tdT=[];tdLM=[];tdCars=[];var y,i,s=td.side,L=0,R=td.rr+td.SW;
+  var holes={L:[[UTY-125,UTY+125],[BRG.a-40,BRG.b+40],[UCY-130,UCY+130]],R:[[FSY-110,FSY+110],[BRG.a-40,BRG.b+40],[UCY-130,UCY+130]]};
+  ['L','R'].forEach(function(sd){y=-60;while(y<td.HUBY-30){var hit=0;holes[sd].forEach(function(hl){if(y>hl[0]-20&&y<hl[1])hit=hl[1]});if(hit){y=hit;continue}
+    var h=84+(rnd()*66|0);tdR.push({sd:sd,y:y,h:h,v:rnd()*TDV|0,k:rnd()<.28?2:1,b:rnd()<.35?1:0,ph:rnd()*9});y+=h+8}});
+  var side=0;for(y=60;y<td.HUBY-60;y+=120+rnd()*80){side^=1;if(y>BRG.a-30&&y<BRG.b+30)continue;var d=46+(rnd()*3|0)*11;
+    tdT.push({x:side?td.rr+td.SW/2+14-rnd()*5:td.rl-td.SW/2-14+rnd()*5,y:y,v:(d-46)/11|0})}
+  tdLM.push({key:'fs',x:R,y:FSY-(s+16)/2,w:s,h:s+16,k:0});tdLM.push({key:'ut',x:0,y:UTY-115,w:s,h:230,k:1});
+  tdLM.push({key:'ucl',x:0,y:UCY-125,w:s,h:250,k:1});tdLM.push({key:'ucr',x:R,y:UCY-125,w:s,h:250,k:1});tdLM.push({key:'clock',x:s*.5-22,y:UCY-40,w:44,h:44,k:2});
+  tdLM.push({key:'tw',x:td.rl-12-58,y:BRG.t1-25,w:58,h:50,k:2});tdLM.push({key:'tw',x:td.rr+12,y:BRG.t1-25,w:58,h:50,k:2});
+  tdLM.push({key:'tw',x:td.rl-12-58,y:BRG.t2-25,w:58,h:50,k:2});tdLM.push({key:'tw',x:td.rr+12,y:BRG.t2-25,w:58,h:50,k:2});
+  tdLM.push({key:'hub',x:0,y:td.HUBY,w:W,h:330,k:1});
+  for(i=0;i<8;i++)tdCars.push({y0:rnd()*1400,v:80+rnd()*80,k:i%6})}
+function tdPaint(){seed=21;var i,c,s,y,RW=td.RW,rl=td.rl,rr=td.rr,SW=td.SW;
+  s=tdMk(W,360);c=s.x;td.gnd=s.c;                                              // repeating street tile: asphalt, sidewalks, curbs, center line
+  poly(c,-2,-2,W+4,364,'#1b5367',.4);strokes(c,0,0,W,360,'#245c74',W*4,12,.3,1.2);
+  [[rl-SW,rl],[rr,rr+SW]].forEach(function(sd){poly(c,sd[0],-2,SW,364,'#d4a27c',.4);for(y=-4;y<364;y+=12){poly(c,sd[0]+1,y,SW/2-1,11,jit('#e0b992',34),.7,.8);poly(c,sd[0]+SW/2,y+5,SW/2-1,11,jit('#c08f6a',34),.7,.8)}});
+  poly(c,rl-2,-2,2.4,364,'#0f3342',.2);poly(c,rr,-2,2.4,364,'#0f3342',.2);
+  poly(c,rl,-2,RW,364,'#1f4458',.4);strokes(c,rl,0,RW,360,'#33647c',RW*3,10,.28,1.2);strokes(c,rl,0,RW,360,'#0d2230',RW*2,8,.3,1);
+  poly(c,W/2-2.2,-2,1.2,364,'#f7b538',.15);poly(c,W/2+1,-2,1.2,364,'#f7b538',.15);strokes(c,rl-SW,0,2*SW+RW,360,'#f7c531',40,3,.55,1);   // double yellow + fallen ginkgo leaves
+  td.roofs=[];for(i=0;i<TDV;i++)td.roofs.push(tdRoof(i));
+  td.canopy=[46,57,68].map(function(d){var q=tdMk(d+8,d+8);tdCanopy(q.x,(d+8)/2,(d+8)/2,d);return q.c});
+  td.img.fs=tdFountain(td.side,td.side+16);td.img.ut=tdTerminal(td.side,230);td.img.ucl=tdCampus(td.side,250,0);td.img.ucr=tdCampus(td.side,250,1);
+  td.img.clock=tdClockRoof();td.img.tw=tdTower();td.img.hub=tdHub(W,330);
+  td.car=['#2f7fd0','#f7b538','#3aa56a','#4aa3c0','#e8e0d0','#9fd0e0'].map(tdCarSpr);td.me=tdCarSpr('#f27230');
+  s=tdMk(40,40);c=s.x;var gr=c.createRadialGradient(20,20,0,20,20,20);gr.addColorStop(0,'rgba(255,214,130,.95)');gr.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=gr;c.fillRect(0,0,40,40);td.glow=s.c;
+  var gc=document.createElement('canvas');gc.width=gc.height=180;var gx=gc.getContext('2d');
+  for(i=0;i<2600;i++){gx.globalAlpha=.25+rnd()*.35;gx.fillStyle=rnd()>.5?'#fff3e2':'#0f2b38';var z=1+rnd()*1.6;gx.fillRect(rnd()*180,rnd()*180,z,z)}
+  td.grain=g.createPattern(gc,'repeat')}
+
+/* Swap painted phone sprites for your images (see IMAGES_PHONE above). Runs after tdPaint(). */
+function tdFit(im,w,h){var s=tdMk(w,h);s.x.drawImage(im,0,0,w,h);return s.c}
+function tdApplyImages(){var I=IMAGES_PHONE,i;
+  function put(src,w,h,set){if(!src)return;(IMG[src]?Promise.resolve(IMG[src]):loadImg(src).then(function(im){return IMG[src]=im})).then(function(im){set(tdFit(im,w,h))}).catch(function(){})}
+  put(I.ground,W,360,function(c){td.gnd=c});
+  if(I.roofs&&I.roofs.length)for(i=0;i<TDV;i++)(function(i){put(I.roofs[i%I.roofs.length],td.side,150,function(c){td.roofs[i]=c})})(i);
+  if(I.canopy&&I.canopy.length)for(i=0;i<3;i++)(function(i){var d=46+i*11+8;put(I.canopy[i%I.canopy.length],d,d,function(c){td.canopy[i]=c})})(i);
+  put(I.fountain,td.side,td.side+16,function(c){td.img.fs=c});put(I.terminal,td.side,230,function(c){td.img.ut=c});
+  put(I.campusL,td.side,250,function(c){td.img.ucl=c});put(I.campusR,td.side,250,function(c){td.img.ucr=c});
+  put(I.clock,44,44,function(c){td.img.clock=c});put(I.tower,58,50,function(c){td.img.tw=c});put(I.hub,W,330,function(c){td.img.hub=c});
+  if(I.cars&&I.cars.length)for(i=0;i<6;i++)(function(i){put(I.cars[i%I.cars.length],20,36,function(c){td.car[i]=c})})(i);
+  put(I.me,20,36,function(c){td.me=c});put(I.glow,40,40,function(c){td.glow=c});
+  if(I.grain)loadImg(I.grain).then(function(im){td.grain=g.createPattern(im,'repeat')}).catch(function(){})}
+
+
+
+/* ====================================================================
+   LAYER LAB  (everything above is the same painting code the real page uses)
+   Two previews: DESKTOP side-scroll and PHONE top-down. g is the "current" canvas context, swapped per preview.
+   ==================================================================== */
 var $=function(i){return document.getElementById(i)};
-VW=320;U=1;cv.width=960;cv.height=540;g.setTransform(3,0,0,3,0,0);   // preview: 320x180 units shown at 3x
-build();paint();
-var cam=0,slider=$('cam');
-/* A layer = an image + a parallax factor f (how much of the camera's movement it follows).
-   f=0 never moves, f=1 moves with the road. kind tells the preview how to slice/repeat it. */
-var LAY=[
- {name:'Sky (brushed bands + clouds)',img:S.sky,f:.02,kind:'sky',on:1,core:1},
- {name:'Sun',img:S.sun,f:.03,kind:'sun',on:1,core:1},
- {name:'Far skyline + downtown towers',img:S.far,f:.1,kind:'strip',on:1,core:1},
- {name:'Union Terminal',img:S.b,f:.22,kind:'strip',on:1,core:1},
- {name:'Street buildings, Fountain Sq, UC, 1819 Hub',img:S.mid,f:.55,kind:'strip',on:1,core:1},
- {name:'Roebling Bridge (full speed)',img:S.br,f:1,kind:'world',x:BR.x0,on:1,core:1},
- {name:'Sidewalk tile (repeats every 360 units)',img:S.walk,f:1,kind:'tile',y:GY-40,on:1,core:1},
- {name:'Road tile (repeats every 360 units)',img:S.road,f:1,kind:'tile',y:RD,on:1,core:1},
- {name:'Player car',img:S.car[6],f:1,kind:'car',on:1,core:1}
-];
-function drawLayer(L){var im=L.img,x,w,h;
-  if(L.kind==='sky')g.drawImage(im,-cam*L.f,0,VW+100,VH);
-  else if(L.kind==='sun')g.drawImage(im,VW*.62-cam*L.f-40,48,80,80);
-  else if(L.kind==='strip'){w=im.width/RS-VW;g.drawImage(im,mod(cam*L.f,Math.max(1,w))*RS,0,VW*RS,VH*RS,0,0,VW,VH)}
-  else if(L.kind==='world')g.drawImage(im,L.x-cam*L.f,0,im.width/RS,VH);
-  else if(L.kind==='tile'){h=im.height/RS;for(x=-mod(cam*L.f,360);x<VW;x+=360)g.drawImage(im,x-.3,L.y,360.6,h)}
-  else if(L.kind==='car'){var px=VW*.12+cam/camMax*VW*.5+22;g.drawImage(im,px-21.25,179-22.5,42.5,25);
+var gd=g,cvp=$('prevp'),gp=cvp.getContext('2d');
+/* ---------- desktop setup ---------- */
+VW=320;U=1;cv.width=960;cv.height=540;gd.setTransform(3,0,0,3,0,0);build();paint();
+/* ---------- phone setup (a 390 x 700 phone screen) ---------- */
+function tdLayout(){W=390;H=700;td.RW=Math.round(Math.min(92,W*.24));td.rl=Math.round((W-td.RW)/2);td.rr=td.rl+td.RW;td.SW=18;td.side=td.rl-td.SW;td.cw=Math.min(160,td.side+20);td.cx=W/2;td.HUBY=WLtd+H*.44+90}   // replaces the real page's version (no DOM here)
+cvp.width=780;cvp.height=1400;gp.setTransform(2,0,0,2,0,0);
+tdLayout();tdBuild();tdPaint();
+
+var tab='d',camD=0,camP=0;
+/* parallax blit used by the phone preview: scale a sprite about the screen center (zoom > 1 = taller things drift faster) */
+function tdBlit(img,x,wy,w,h,S,flip,cam){var C=H*.46,cx=td.cx,py=wy+h/2-cam,sx=cx+(x+w/2-cx)*S,sy=C+(py-C)*S,dw=w*S,dh=h*S;
+  if(sy+dh/2<-10||sy-dh/2>H+10)return null;
+  if(flip){g.save();g.translate(sx,sy);g.scale(-1,1);g.drawImage(img,-dw/2,-dh/2,dw,dh);g.restore()}else g.drawImage(img,sx-dw/2,sy-dh/2,dw,dh);
+  return[sx,sy,dw,dh]}
+/* ---------- generic layer list UI ---------- */
+function makeList(box,arr){
+  function render(){box.innerHTML='';arr.forEach(function(L,i){var r=document.createElement('div');r.className='row';
+    var h='<label class="chk"><input type="checkbox" data-a="on" data-i="'+i+'"'+(L.on?' checked':'')+'> <b>'+L.name+'</b></label>';
+    (L.fields||[]).forEach(function(f){h+='<span>'+f[1]+' <input type="number" step="'+f[2]+'" value="'+L[f[0]]+'" data-a="'+f[0]+'" data-i="'+i+'"></span>'});
+    h+='<span class="btns"><button data-a="up" data-i="'+i+'" title="draw later (in front)">▲</button><button data-a="dn" data-i="'+i+'" title="draw earlier (behind)">▼</button>'+(L.core?'':'<button data-a="del" data-i="'+i+'">✕</button>')+'</span>';
+    r.innerHTML=h;box.appendChild(r)})}
+  box.addEventListener('input',function(e){var d=e.target.dataset,L=arr[d.i];if(!d.a)return;if(d.a==='on')L.on=e.target.checked;else L[d.a]=parseFloat(e.target.value)||0});
+  box.addEventListener('click',function(e){var d=e.target.dataset,i=+d.i;if(!d.a||['on'].indexOf(d.a)>=0||e.target.tagName==='INPUT')return;
+    if(d.a==='up'&&i<arr.length-1){var a=arr[i];arr[i]=arr[i+1];arr[i+1]=a}
+    if(d.a==='dn'&&i>0){var b=arr[i];arr[i]=arr[i-1];arr[i-1]=b}
+    if(d.a==='del')arr.splice(i,1);render()});
+  render();return render}
+function addUpload(input,arr,make,render){input.addEventListener('change',function(e){Array.prototype.forEach.call(e.target.files,function(f){var rd=new FileReader();
+  rd.onload=function(){var im=new Image();im.src=rd.result;im.decode().then(function(){arr.push(make(f.name,im));render()})};rd.readAsDataURL(f)});e.target.value=''})}   // data: URL = the only image source a published page allows
+
+/* ---------- DESKTOP layers ---------- */
+var LD=[
+ {name:'Sky (teal dusk to orange, wispy clouds)',img:S.sky,f:.02,kind:'sky',on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Sun',img:S.sun,f:.03,kind:'sun',on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Far skyline + downtown towers',img:S.far,f:.1,kind:'strip',on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Union Terminal',img:S.b,f:.22,kind:'strip',on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Street buildings, ginkgos, Fountain Sq, UC, 1819 Hub',img:S.mid,f:.55,kind:'strip',on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Roebling Bridge (full speed)',img:S.br,f:1,kind:'world',x:BR.x0,on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Sidewalk tile + ginkgos (repeats every 360 units)',img:S.walk,f:1,kind:'tile',y:GY-40,on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Road tile (repeats every 360 units)',img:S.road,f:1,kind:'tile',y:RD,on:1,core:1,fields:[['f','speed',.01]]},
+ {name:'Player car',img:S.car[6],f:1,kind:'car',on:1,core:1}];
+function drawLayerD(L){var im=L.img,x,w,h;
+  if(L.kind==='sky')g.drawImage(im,-camD*L.f,0,VW+100,VH);
+  else if(L.kind==='sun')g.drawImage(im,VW*.62-camD*L.f-40,48,80,80);
+  else if(L.kind==='strip'){w=im.width/RS-VW;g.drawImage(im,mod(camD*L.f,Math.max(1,w))*RS,0,VW*RS,VH*RS,0,0,VW,VH)}
+  else if(L.kind==='world')g.drawImage(im,L.x-camD*L.f,0,im.width/RS,VH);
+  else if(L.kind==='tile'){h=im.height/RS;for(x=-mod(camD*L.f,360);x<VW;x+=360)g.drawImage(im,x-.3,L.y,360.6,h)}
+  else if(L.kind==='car'){var px=VW*.12+camD/camMax*VW*.5+22;g.drawImage(im,px-21.25,179-22.5,42.5,25);
     [-11,10].forEach(function(o){g.fillStyle='#1c1228';g.beginPath();g.arc(px+o*1.25,179-3.75,3.75,0,6.283);g.fill();g.fillStyle='#d8c8e8';g.beginPath();g.arc(px+o*1.25,179-3.75,1.7,0,6.283);g.fill()})}
-  else{h=VH*L.sc;w=Math.max(1,im.width*h/im.height);for(x=-mod(cam*L.f,w);x<VW;x+=w)g.drawImage(im,x,L.y,w,h)}}
+  else{h=VH*L.sc;w=Math.max(1,im.width*h/im.height);for(x=-mod(camD*L.f,w);x<VW;x+=w)g.drawImage(im,x,L.y,w,h)}}
+
+/* ---------- PHONE layers ---------- */
+var LP=[
+ {name:'Street tile (asphalt, sidewalks, center line)',kind:'ground',on:1,core:1},
+ {name:'River, bridge rails + cables (drawn by code)',kind:'river',on:1,core:1},
+ {name:'Lamps + warm string lights (code)',kind:'lamps',on:1,core:1},
+ {name:'Oncoming traffic + your car',kind:'cars',on:1,core:1},
+ {name:'Rooftops, normal height',kind:'roofs',lift:1.07,on:1,core:1,fields:[['lift','zoom',.01]]},
+ {name:'Plazas + landmarks (Fountain Sq, terminal, UC, hub)',kind:'plazas',lift:1.04,on:1,core:1,fields:[['lift','zoom',.01]]},
+ {name:'Tall rooftops',kind:'tall',lift:1.17,on:1,core:1,fields:[['lift','zoom',.01]]},
+ {name:'Ginkgo crowns',kind:'trees',lift:1.12,on:1,core:1,fields:[['lift','zoom',.01]]},
+ {name:'Bridge towers + clock-tower roof',kind:'towers',lift:1.2,on:1,core:1,fields:[['lift','zoom',.01]]},
+ {name:'Cloud shadows',kind:'clouds',on:1,core:1}];
+function drawLayerP(L){var i,y,k,rl=td.rl,rr=td.rr,cx=td.cx,RW=td.RW,tt=performance.now()/1000,cam=camP;
+  if(L.kind==='ground'){for(y=-mod(cam,360);y<H;y+=360)g.drawImage(td.gnd,0,y,W,360.7)}
+  else if(L.kind==='river'){var by0=BRG.a-cam,by1=BRG.b-cam;if(by1>0&&by0<H){var a=Math.max(0,by0),b=Math.min(H,by1);g.fillStyle='#1f5f78';g.fillRect(0,a,rl-12,b-a);g.fillRect(rr+12,a,W-rr-12,b-a);
+      g.fillStyle='#ff9a6a';g.globalAlpha=.55;for(i=0;i<50;i++){var ry=a+mod(hh(i,2)*(b-a)+tt*9,b-a),rx=hh(i,1)*W;if(rx<rl-14||rx>rr+14)g.fillRect(rx,ry,6+hh(i,3)*6,1)}g.globalAlpha=1;
+      g.fillStyle='#b98f6a';g.fillRect(rl-12,a,4,b-a);g.fillRect(rr+8,a,4,b-a);g.fillStyle='#3f6fd0';g.fillRect(rl-7,a,2,b-a);g.fillRect(rr+5,a,2,b-a);
+      for(y=Math.ceil(BRG.a/14)*14;y<BRG.b;y+=14){var sy=y-cam;if(sy<-3||sy>H+3)continue;g.fillRect(rl-7,sy,7,1);g.fillRect(rr,sy,7,1)}}}
+  else if(L.kind==='lamps'){var bp=['#fff3c4','#ffd966','#ffb347','#ffe9a8','#ffffff'];
+    g.globalAlpha=.4;g.fillStyle='#efe2f4';for(k=0;k<2;k++)for(y=-mod(cam,56)-56;y<H;y+=56)g.fillRect(cx+(k?1:-1)*RW/4-1,y,2,22);g.globalAlpha=1;
+    for(y=Math.floor(cam/150)*150-150;y<cam+H+150;y+=150){if(y>BRG.a-40&&y<BRG.b+40)continue;var ly=y-cam,li=y/150|0;
+      if(li%2===0){g.strokeStyle='rgba(11,36,48,.55)';g.lineWidth=.8;g.beginPath();g.moveTo(rl-4,ly);g.lineTo(rr+4,ly);g.stroke();for(k=0;k<=6;k++)if(((tt*3|0)+k+li)%3){g.fillStyle=bp[mod(k+li,5)];g.beginPath();g.arc(rl-4+(RW+8)*k/6,ly,1.6,0,6.283);g.fill()}}
+      [rl-4,rr+4].forEach(function(lx){g.fillStyle='#0f2b38';g.beginPath();g.arc(lx,ly,3,0,6.283);g.fill();g.globalCompositeOperation='lighter';g.globalAlpha=.55;g.drawImage(td.glow,lx-20,ly-20,40,40);g.globalAlpha=1;g.globalCompositeOperation='source-over'})}}
+  else if(L.kind==='cars'){for(i=0;i<tdCars.length;i++){var cr=tdCars[i],cy=mod(cr.y0-cr.v*tt-cam,H+300)-150;g.drawImage(td.car[cr.k],cx+RW/4-9,cy-17,18,32)}
+    var carY=H*.44;g.save();g.translate(cx-RW/4,carY);g.rotate(Math.PI);g.drawImage(td.me,-9.5,-17,19,34);g.restore()}
+  else if(L.kind==='roofs'){for(i=0;i<tdR.length;i++){var r=tdR[i];if(r.k===1)tdBlit(td.roofs[r.v],r.sd==='L'?0:rr+td.SW,r.y,td.side,r.h,L.lift,r.sd==='R',cam)}}
+  else if(L.kind==='plazas'){for(i=0;i<tdLM.length;i++){var m=tdLM[i];if(m.k<2)tdBlit(td.img[m.key],m.x,m.y,m.w,m.h,m.k?L.lift:1,false,cam)}}
+  else if(L.kind==='tall'){for(i=0;i<tdR.length;i++){var r2=tdR[i];if(r2.k===2)tdBlit(td.roofs[r2.v],r2.sd==='L'?0:rr+td.SW,r2.y,td.side,r2.h,L.lift,r2.sd==='R',cam)}}
+  else if(L.kind==='trees'){for(i=0;i<tdT.length;i++){var tr=tdT[i],d=46+tr.v*11+8;tdBlit(td.canopy[tr.v],tr.x-d/2,tr.y,d,d,L.lift,false,cam)}}
+  else if(L.kind==='towers'){for(i=0;i<tdLM.length;i++){var m2=tdLM[i];if(m2.k===2)tdBlit(td.img[m2.key],m2.x,m2.y,m2.w,m2.h,L.lift,false,cam)}}
+  else if(L.kind==='clouds'){g.fillStyle='#0b2430';g.globalAlpha=.09;[[.2,.0],[.65,.4],[.35,.8]].forEach(function(p,j){g.beginPath();g.ellipse(((p[0]*W+tt*6*(j+1))%(W+300))-120,mod(p[1]*H*3-cam*1.5,H+360)-180,150,70,.3,0,6.283);g.fill()});g.globalAlpha=1}
+  else{var dw=W*L.size,dh=Math.max(1,L.img.height*dw/L.img.width);for(y=-mod(cam*L.speed,dh)+L.y;y<H;y+=dh)g.drawImage(L.img,L.x,y,dw,dh)}}   // custom: a vertical strip that repeats downward
+
+/* ---------- animation loop: only the visible tab is drawn ---------- */
 function loop(){
-  if($('auto').checked)slider.value=(+slider.value+1.5)%1001;
-  cam=slider.value/1000*camMax;g.clearRect(0,0,VW,VH);g.fillStyle='#2b1a5e';g.fillRect(0,0,VW,VH);
-  LAY.forEach(function(L){if(L.on)drawLayer(L)});
+  if(tab==='d'){if($('autoD').checked)$('camD').value=(+$('camD').value+1.5)%1001;camD=$('camD').value/1000*camMax;
+    g=gd;g.clearRect(0,0,VW,VH);g.fillStyle='#1d6275';g.fillRect(0,0,VW,VH);LD.forEach(function(L){if(L.on)drawLayerD(L)})}
+  else{if($('autoP').checked)$('camP').value=(+$('camP').value+4)%(WLtd+1);camP=+$('camP').value;
+    g=gp;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,W,H);g.fillStyle='#1b5367';g.fillRect(0,0,W,H);LP.forEach(function(L){if(L.on)drawLayerP(L)})}
   requestAnimationFrame(loop)}
-/* layer list UI */
-function render(){var box=$('layers');box.innerHTML='';
-  LAY.forEach(function(L,i){var r=document.createElement('div');r.className='row';
-    r.innerHTML='<label class="chk"><input type="checkbox" data-a="on" data-i="'+i+'"'+(L.on?' checked':'')+'> <b>'+L.name+'</b></label>'+
-     '<span>speed <input type="number" step=".01" min="0" max="2" value="'+L.f+'" data-a="f" data-i="'+i+'"></span>'+
-     (L.core?'':'<span>y <input type="number" step="1" value="'+L.y+'" data-a="y" data-i="'+i+'"></span><span>size <input type="number" step=".1" min=".1" value="'+L.sc+'" data-a="sc" data-i="'+i+'"></span>')+
-     '<span class="btns"><button data-a="up" data-i="'+i+'" title="draw later (in front)">▲</button><button data-a="dn" data-i="'+i+'" title="draw earlier (behind)">▼</button>'+(L.core?'':'<button data-a="del" data-i="'+i+'">✕</button>')+'</span>';
-    box.appendChild(r)})}
-$('layers').addEventListener('input',function(e){var d=e.target.dataset,L=LAY[d.i];if(!d.a)return;
-  if(d.a==='on')L.on=e.target.checked;else if(d.a==='f'||d.a==='y'||d.a==='sc')L[d.a]=parseFloat(e.target.value)||0});
-$('layers').addEventListener('click',function(e){var d=e.target.dataset,i=+d.i;if(!d.a||d.a==='on'||d.a==='f'||d.a==='y'||d.a==='sc')return;
-  if(d.a==='up'&&i<LAY.length-1){var a=LAY[i];LAY[i]=LAY[i+1];LAY[i+1]=a}
-  if(d.a==='dn'&&i>0){var b=LAY[i];LAY[i]=LAY[i-1];LAY[i-1]=b}
-  if(d.a==='del')LAY.splice(i,1);render()});
-/* add your own image: read as a data: URL (the only image source a published page may use), decode, add as a layer */
-$('file').addEventListener('change',function(e){Array.prototype.forEach.call(e.target.files,function(f){var rd=new FileReader();
-  rd.onload=function(){var im=new Image();im.src=rd.result;im.decode().then(function(){
-    LAY.push({name:f.name,img:im,f:.3,kind:'custom',on:1,y:0,sc:1});render()})};rd.readAsDataURL(f)});e.target.value=''});
-render();requestAnimationFrame(loop);
-/* gallery: every pre-rendered layer as its own canvas (right-click -> Save image as to get a PNG) */
+var rD=makeList($('layersD'),LD),rP=makeList($('layersP'),LP);
+addUpload($('fileD'),LD,function(n,im){return{name:n,img:im,f:.3,kind:'custom',on:1,y:0,sc:1,fields:[['f','speed',.01],['y','y',1],['sc','size',.1]]}},rD);
+addUpload($('fileP'),LP,function(n,im){return{name:n,img:im,kind:'pcustom',on:1,speed:1,size:1,x:0,y:0,fields:[['speed','speed',.05],['size','size',.1],['x','x',1],['y','y',1]]}},rP);
+document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){tab=b.dataset.tab;
+  document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b)});$('tab-d').hidden=tab!=='d';$('tab-p').hidden=tab!=='p'})});
+requestAnimationFrame(loop);
+
+/* ---------- galleries: every pre-rendered layer as its own canvas (right-click -> Save image as) ---------- */
 function show(host,src,label,cssW){var c=document.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);
   var f=document.createElement('figure');if(cssW)c.style.width=cssW+'px';f.appendChild(c);
   var cp=document.createElement('figcaption');cp.textContent=label+' · '+src.width+'×'+src.height+'px';f.appendChild(cp);host.appendChild(f)}
-LAY.slice(0,8).forEach(function(L){show($('gal'),L.img,L.name,null)});
-/* element catalog: single pieces made with the brush helpers, at 3x */
+LD.slice(0,8).forEach(function(L){show($('galD'),L.img,L.name,null)});
+show($('galP'),td.gnd,'street tile (repeats every 360 px)',Math.min(300,td.gnd.width/2));
+td.roofs.forEach(function(r,i){show($('galP'),r,'rooftop variant '+(i+1),r.width/2)});
+td.canopy.forEach(function(r,i){show($('galP'),r,'ginkgo crown '+(i+1),r.width/2)});
+[['fs','Fountain Square'],['ut','Union Terminal'],['ucl','UC campus (left)'],['ucr','UC roofs + banner (right)'],['clock','clock-tower roof'],['tw','Roebling tower top'],['hub','1819 Innovation Hub roof']].forEach(function(k){var im=td.img[k[0]];show($('galP'),im,k[1],Math.min(300,im.width/2))});
+td.car.forEach(function(r,i){show($('galP'),r,'traffic car '+(i+1),r.width/2*2)});show($('galP'),td.me,'player car',td.me.width);show($('galP'),td.glow,'glow sprite',td.glow.width/2);
+
+/* ---------- element catalog (desktop brush helpers) ---------- */
 seed=77;
 [['wall()  brick wall',90,60,function(c){wall(c,6,6,78,48,'#b5503a')}],
- ['foliage()  bush with flowers',80,50,function(c){foliage(c,6,6,68,38,['#4f8a3a','#7aa83a','#2f6a3a'],['#ffd27a','#ff7a8a'])}],
- ['tier() + cap()  tower pieces',50,100,function(c){tier(c,25,96,24,60,'#6e3a8c');tier(c,25,36,14,18,'#6e3a8c');cap(c,25,18,14,12,'#6e3a8c')}],
+ ['foliage()  bush with flowers',80,50,function(c){foliage(c,6,6,68,38,['#5f8f3a','#9ab23a','#c8b43c'],['#ffd27a','#ffb347'])}],
+ ['ginkgo()  yellow street tree',70,80,function(c){ginkgo(c,35,76,70)}],
+ ['tier() + cap()  tower pieces',50,100,function(c){tier(c,25,96,24,60,'#245c74');tier(c,25,36,14,18,'#245c74');cap(c,25,18,14,12,'#245c74')}],
  ['fountain()  Fountain Square',170,84,function(c){c.translate(0,-(GY-80));fountain(c,85)}],
  ['ucBody()  UC clock tower',250,150,function(c){c.translate(0,-(GY-146));ucBody(c,{x:40,w:170,d:'#5a1f1a'})}],
- ['hubBody()  1819 Innovation Hub',200,150,function(c){c.translate(0,-(GY-146));hubBody(c,{x:12,w:176,c:'#7a96b4'})}]
+ ['hubBody()  1819 Innovation Hub (from the photo)',260,150,function(c){c.translate(0,-(GY-146));hubBody(c,{x:36,w:176,c:'#d8b987',d:'#a88a58'})}]
 ].forEach(function(it){var s=mk(it[1],it[2]);it[3](s.x);show($('cat'),s.c,it[0],it[1]*3)});
-S.car.forEach(function(cc,i){show($('cat'),cc,'car sprite '+(i+1)+(i===6?' (player)':''),102)});
+S.car.forEach(function(cc,i){show($('cat'),cc,'desktop car sprite '+(i+1)+(i===6?' (player)':''),102)});
 show($('cat'),S.sun,'sun sprite',160);show($('cat'),S.glow,'glow sprite (lamps, windows)',102);
 })();
 </script>
