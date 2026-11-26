@@ -111,6 +111,10 @@ code{background:var(--deep);padding:1px 5px;border-radius:4px}
 <p>The HTML parts of the site as clean SVG at the sizes the site shows them, in its vintage Cincinnati sign style: the About us enamel skyline board, the Schedule script arrow with its marquee, the neon Sponsors banner, the Tracks motel marquee, the FAQ rooftop letters and the map, plus the sign parts, the hero with the three interest-form buttons, the header and burger menu, the on-screen controls and the pop-up sheets. Text stays editable: Caveat Brush and Yellowtail (both free on Google Fonts, included in the zip) and Arial. PNGs are exported at 2×.</p>
 <div id="ui"></div>
 
+<h2>New website additions</h2>
+<p>These are the newer pieces added after the original city artwork: the FAQ storefront, the redesigned pop-up forms, and the font-pairing control. Each item can be downloaded as editable SVG or PNG.</p>
+<div id="new-assets" class="grid ui"></div>
+
 <h2>Sizes</h2>
 <div class="scroll"><table>
 <thead><tr><th>Asset</th><th>Phone</th><th>Tablet</th><th>Laptop</th><th>Wide</th></tr></thead>
@@ -556,6 +560,35 @@ EL.push(['People','football-toss','Football toss (two fans + ball)',34,20,functi
 EL.push(['People','football','Football',6,4,function(c){football(c,3,2,0)}]);
 EL.push(['Sky','sky-band','Sky band above the scene (painted dusk)',320,80,function(c){skyBand(c,320,80)}]);
 
+/* New building: the four-door FAQ storefront added to the roadside FAQ sign. */
+EL.push(['Buildings','faq-storefront','FAQ & Co. storefront',420,230,function(c){
+  // Sign cornice
+  c.fillStyle='#5a1f1a';c.fillRect(4,4,412,52);
+  c.strokeStyle='#c9a24a';c.lineWidth=3;c.strokeRect(4,4,412,52);
+  c.fillStyle='#ffe9a8';c.font='34px "Yellowtail", cursive';c.textAlign='center';c.fillText('FAQ & Co.',210,40);
+  c.fillStyle='#e8c47a';c.font='bold 9px "DM Mono", monospace';c.fillText('STEP INSIDE · FIND YOUR ANSWERS',210,52);
+  // Striped awning
+  for(var a=0;a<8;a++){c.fillStyle=a%2?'#1f5d63':'#f3ead2';c.fillRect(0+a*52,59,52,25)}
+  // Brick facade
+  c.fillStyle='#963b2a';c.fillRect(8,84,404,128);
+  c.strokeStyle='#c9a24a';c.lineWidth=3;c.strokeRect(8,84,404,128);
+  for(var y=92;y<210;y+=13){c.strokeStyle='rgba(35,15,12,.35)';c.lineWidth=1;c.beginPath();c.moveTo(10,y);c.lineTo(410,y);c.stroke()}
+  // Four arched doorways
+  var labels=['EVENT','PEOPLE','TEAMS','TRAVEL'],icons=['✦','♟','⌂','➜'];
+  for(var d=0;d<4;d++){
+    var x=20+d*99;
+    c.fillStyle='#0c2a33';c.fillRect(x,112,84,100);
+    c.fillStyle='#c9a24a';c.lineWidth=4;c.strokeStyle='#3a1410';
+    c.beginPath();c.moveTo(x,212);c.lineTo(x,143);c.quadraticCurveTo(x,112,x+42,112);c.quadraticCurveTo(x+84,112,x+84,143);c.lineTo(x+84,212);c.stroke();
+    c.fillStyle='rgba(255,190,100,.22)';c.fillRect(x+8,124,68,78);
+    c.strokeStyle='#3a1410';c.lineWidth=2;c.beginPath();c.moveTo(x+42,124);c.lineTo(x+42,210);c.stroke();
+    c.fillStyle='#ffe9a8';c.font='23px Arial';c.textAlign='center';c.fillText(icons[d],x+42,177);
+    c.fillStyle='#fff3e2';c.font='13px "Caveat Brush", cursive';c.fillText(labels[d],x+42,225);
+  }
+  c.fillStyle='#b9a78a';c.fillRect(0,212,420,14);
+  c.strokeStyle='#c9a24a';c.lineWidth=3;c.strokeRect(0,212,420,14);
+}]);
+
 /* render one element as a canvas (PNG) or SVG text; the same seed makes both identical */
 function renderEl(i,svg){var e=EL[i];seed=1000+i*37;SVGMODE=!!svg;var s=mk(e[3],e[4]);SVGMODE=false;e[5](s.x);return svg?s.x.toSVG(e[2]):s.c}
 /* paint every layer for a device size; svg=true records vectors instead */
@@ -646,7 +679,7 @@ function README(){return['RevUC painted drive: asset pack','',
  '  phone VW 170 · tablet VW 230 · laptop VW 320 · wide VW 700 (VW = units of city visible across the screen).',
  '  Sky, sun, bridge and the two tiles are the same size everywhere. If you only make one set, make "wide" (the longest). Landmarks painted into a strip line up exactly only at the size it was made for.',
  'elements/  Buildings, landmarks, trees, cars, lamp, sun, glow. Same on every screen.',
- 'components/  The HTML parts of the site as SVG + PNG @2x, in the vintage Cincinnati sign style: About us (enamel skyline board), Schedule (script arrow + marquee), Sponsors (neon), Tracks (motel marquee), FAQ (rooftop letters), the map (desktop + phone each); sign parts (bulb frame, star, skyline strip, posts); hero with the three interest-form buttons; header, burger menu, now-passing bar, hints, buttons; pop-up sheets incl. Tracks and FAQ. brand/ has the logo PNG.',
+ 'components/  The HTML parts of the site as SVG + PNG @2x, including the newer FAQ storefront, hacker/sponsor/judge forms and font-pairing specimen, plus the vintage Cincinnati sign style: About us (enamel skyline board), Schedule (script arrow + marquee), Sponsors (neon), Tracks (motel marquee), FAQ (rooftop letters), the map (desktop + phone each); sign parts (bulb frame, star, skyline strip, posts); hero with the three interest-form buttons; header, burger menu, now-passing bar, hints, buttons; pop-up sheets incl. Tracks and FAQ. brand/ has the logo PNG.',
  'elements/people/  Walkers, fans in orange and red jerseys, a kid, the football toss. The site draws them blurred and moving; these are the crisp shapes.',
  'Fonts: Caveat Brush (titles) and Yellowtail (script on the signs), both free under the SIL Open Font License on Google Fonts; Arial and Arial Black for text and marquee letters. The SVGs carry the fonts for browsers; install the two from fonts/ so Illustrator and Figma show them.','',
  'Draw order and parallax speed: 01 sky 2% · 02 sun 3% · 03 far skyline 10% · 04 Union Terminal 22% · 05 street 55% · 06 bridge 100% · 07 sidewalk 100% · 08 road 100% · then cars.',
@@ -654,7 +687,7 @@ function README(){return['RevUC painted drive: asset pack','',
  'To use your edited art on the site: put the file into the IMAGES block at the top of the site script (a data: URL in a published page, a normal path on your own host).'].join('\n')}
 $('zip').addEventListener('click',function(){if(!window.JSZip){busy(true,'The zip button needs an internet connection (it loads JSZip). The PNG and SVG buttons work offline.');setTimeout(function(){busy(false)},5000);return}
   later(function(){var z=new JSZip(),d=$('alldev').checked?Object.keys(DEV):[dev],add=function(f){f.b?z.file(f.p,f.b,{base64:true}):z.file(f.p,f.t)};LAB.collect(d,true).forEach(add);
-    busy(true,'Drawing components…');LAB.components().then(function(fs){fs.forEach(add);busy(true,'Zipping…');return z.generateAsync({type:'blob'})})
+    busy(true,'Drawing components…');return Promise.all([LAB.components(),Promise.resolve(LAB.updates())]).then(function(groups){groups.forEach(function(fs){fs.forEach(add)});busy(true,'Zipping…');return z.generateAsync({type:'blob'})})
       .then(function(b){busy(false);save(b,'revuc-assets'+(d.length>1?'':'-'+dev)+'.zip')})},'Drawing every layer and element…')});
 
 /* ---------- device sizes ---------- */
@@ -940,7 +973,57 @@ LAB.components=function(){var files=[];return UI.ready().then(function(){
   return UI.LIST.reduce(function(pr,c,i){return pr.then(function(){files.push({p:'components/svg/'+c[1]+'.svg',t:UI.svg(i).t});
     return UI.png(i,2).then(function(cv){files.push({p:'components/png/'+c[1]+'@2x.png',b:b64(cv)})})})},Promise.resolve())}).then(function(){
   files.push({p:'components/brand/revuc-logo.png',b:UI.LOGO64});return files})};
-UI.ready().then(renderComponents);
+/* ---------- latest additions: editable SVG + PNG downloads ---------- */
+function newAssetSVG(kind){
+  var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+  var start='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 500" width="1520" height="1000"><title>'+esc(kind)+'</title>';
+  var defs='<defs><linearGradient id="night" x2="0" y2="1"><stop stop-color="#174c5c"/><stop offset="1" stop-color="#0b2430"/></linearGradient><linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fff8ec"/><stop offset="1" stop-color="#fff0d9"/></linearGradient></defs>';
+  var shell='<rect x="12" y="12" width="736" height="476" rx="24" fill="url(#night)" stroke="#ffc46b" stroke-width="8"/>';
+  var title='<text x="48" y="86" font-family="Chivo,Arial,sans-serif" font-size="42" font-weight="900" fill="#ffe9a8">'+esc(kind)+'</text>';
+  var desc='<text x="48" y="126" font-family="Arial,sans-serif" font-size="18" fill="#fff3e2">REVOLUTIONUC · CINCINNATI, OHIO</text>';
+  var body='';
+  if(kind==='FAQ storefront'){
+    body='<rect x="70" y="170" width="620" height="72" rx="8" fill="#5a1f1a" stroke="#c9a24a" stroke-width="5"/><text x="380" y="222" text-anchor="middle" font-family="Yellowtail,cursive" font-size="54" fill="#ffe9a8">FAQ &amp; Co.</text>';
+    body+='<rect x="58" y="248" width="644" height="38" fill="#f3ead2"/>';
+    for(var i=0;i<8;i++)body+='<rect x="'+(58+i*80.5)+'" y="248" width="40.25" height="38" fill="'+(i%2?'#1f5d63':'#f3ead2')+'"/>';
+    body+='<rect x="70" y="286" width="620" height="150" fill="#963b2a" stroke="#c9a24a" stroke-width="5"/>';
+    ['EVENT','PEOPLE','TEAMS','TRAVEL'].forEach(function(label,i){var x=88+i*151;body+='<path d="M'+x+' 436 V350 Q'+x+' 312 '+(x+60)+' 312 Q'+(x+120)+' 312 '+(x+120)+' 350 V436Z" fill="#0c2a33" stroke="#c9a24a" stroke-width="5"/><text x="'+(x+60)+'" y="394" text-anchor="middle" font-family="Arial" font-size="18" fill="#ffe9a8">'+label+'</text>'});
+  }else if(kind.indexOf('form')>=0){
+    body='<rect x="48" y="160" width="664" height="290" rx="16" fill="url(#paper)" stroke="#c98f4a" stroke-width="6"/>';
+    var fields=kind==='Hacker form'?['First name','Last name','Age','Phone number','Email','School','Level of study']:kind==='Sponsor form'?['Organization','Contact name','Email','Phone number','How would you like to help?']:['Name','Email','Organization','Area of expertise','Anything else?'];
+    fields.forEach(function(label,i){var x=72+(i%2)*318,y=195+Math.floor(i/2)*66;body+='<text x="'+x+'" y="'+y+'" font-family="DM Mono,monospace" font-size="14" font-weight="700" fill="#174c5c">'+label.toUpperCase()+'</text><rect x="'+x+'" y="'+(y+10)+'" width="280" height="34" rx="5" fill="#fffaf0" stroke="#b9a78a" stroke-width="2"/>'});
+    body+='<rect x="72" y="405" width="150" height="38" rx="7" fill="#f27230" stroke="#0b2430" stroke-width="3"/><text x="147" y="430" text-anchor="middle" font-family="Chivo,Arial" font-weight="900" font-size="17" fill="#0b2430">SUBMIT</text>';
+  }else{
+    body='<rect x="48" y="160" width="664" height="290" rx="16" fill="url(#paper)" stroke="#c98f4a" stroke-width="6"/>';
+    var pairs=[['BC BARELL EXTENDED BLACK','MONTSERRAT REGULAR','DM MONO REGULAR'],['HAGRID TEXT HEAVY','NUNITO SANS REGULAR','DM MONO REGULAR'],['CLARITY CITY BLACK','GOTHAM BOOK','DM MONO REGULAR'],['CARTER ONE REGULAR','INTER REGULAR','DM MONO REGULAR']];
+    pairs.forEach(function(p,i){var y=205+i*61;body+='<text x="78" y="'+y+'" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#0b2430">'+p[0]+'</text><text x="78" y="'+(y+23)+'" font-family="Arial,sans-serif" font-size="16" fill="#174c5c">'+p[1]+'</text><text x="78" y="'+(y+42)+'" font-family="monospace" font-size="12" fill="#a34c27">'+p[2]+'</text>'});
+  }
+  return start+defs+shell+title+desc+body+'</svg>';
+}
+var NEW_ASSETS=[
+  ['FAQ storefront','new-faq-storefront'],
+  ['Hacker form','new-hacker-form'],
+  ['Sponsor form','new-sponsor-form'],
+  ['Judge mentor form','new-judge-mentor-form'],
+  ['Font pairings','new-font-pairings']
+];
+function renderNewAssets(){
+  var host=$('new-assets');if(!host)return;host.innerHTML='';
+  NEW_ASSETS.forEach(function(item){
+    var name=item[0],file=item[1],svg=newAssetSVG(name),fig=document.createElement('figure'),art=document.createElement('div'),img=new Image();
+    art.className='art';img.alt=name;img.src=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));img.style.width='100%';art.appendChild(img);fig.appendChild(art);
+    var cap=document.createElement('figcaption');cap.innerHTML='<b>'+name+'</b><small>'+file+'.svg · editable vector artwork</small>';
+    var buttons=document.createElement('div');buttons.className='dl';
+    var png=document.createElement('button');png.textContent='PNG @2x';png.addEventListener('click',function(){
+      var image=new Image();image.onload=function(){var c=document.createElement('canvas');c.width=1520;c.height=1000;c.getContext('2d').drawImage(image,0,0,c.width,c.height);pngBlob(c,function(blob){save(blob,file+'@2x.png')})};
+      image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    });
+    var vector=document.createElement('button');vector.textContent='SVG';vector.addEventListener('click',function(){save(svgBlob(svg),file+'.svg')});
+    buttons.appendChild(png);buttons.appendChild(vector);cap.appendChild(buttons);fig.appendChild(cap);host.appendChild(fig);
+  });
+}
+LAB.updates=function(){return NEW_ASSETS.map(function(item){return{p:'components/new/'+item[1]+'.svg',t:newAssetSVG(item[0])}})};
+UI.ready().then(function(){renderComponents();renderNewAssets()});
 })();
 </script>
 </body>
